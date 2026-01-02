@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cover Whale - Master Prompt Engineering Guide</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    :root {
+      --cw-purple: #6B4E8C;
+      --cw-purple-light: #8B6EAC;
+      --cw-purple-dark: #4A3562;
+      --cw-purple-muted: #9080A8;
+      --cw-bg: #F8F6FA;
+      --cw-card: #FFFFFF;
+      --cw-text: #2D2640;
+      --cw-text-light: #5A5270;
+      --cw-accent: #E8E0F0;
+      --cw-success: #5A8C6B;
+      --cw-warning: #C4874D;
+      --cw-danger: #A85858;
+    }
+    
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--cw-bg);
+      color: var(--cw-text);
+      line-height: 1.6;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    header {
+      background: linear-gradient(135deg, var(--cw-purple-dark), var(--cw-purple));
+      color: white;
+      padding: 30px;
+      border-radius: 16px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    
+    header h1 { font-size: 2rem; margin-bottom: 8px; font-weight: 700; }
+    header p { opacity: 0.9; font-size: 1rem; }
+    
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      background: var(--cw-card);
+      padding: 8px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(107,78,140,0.1);
+    }
+    
+    .nav-tab {
+      padding: 10px 16px;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--cw-text-light);
+      transition: all 0.2s;
+    }
+    
+    .nav-tab:hover { background: var(--cw-accent); }
+    .nav-tab.active {
+      background: var(--cw-purple);
+      color: white;
+    }
+    
+    .section { display: none; }
+    .section.active { display: block; }
+    
+    .card {
+      background: var(--cw-card);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(107,78,140,0.08);
+      border-left: 4px solid var(--cw-purple);
+    }
+    
+    .card h3 {
+      color: var(--cw-purple);
+      margin-bottom: 12px;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .card h3 .num {
+      background: var(--cw-purple);
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+    }
+    
+    .formula-box {
+      background: var(--cw-accent);
+      border-radius: 8px;
+      padding: 16px;
+      margin: 16px 0;
+      font-family: 'Consolas', monospace;
+      font-size: 0.9rem;
+    }
+    
+    .example-box {
+      background: #F0F8F2;
+      border: 1px solid #C8E0CC;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 12px 0;
+    }
+    
+    .example-box.bad {
+      background: #FDF5F5;
+      border-color: #E8CCCC;
+    }
+    
+    .example-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      color: var(--cw-success);
+    }
+    
+    .example-box.bad .example-label { color: var(--cw-danger); }
+    
+    .warning-box {
+      background: #FFF8F0;
+      border: 1px solid #E8D4C0;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+    
+    .warning-box h4 {
+      color: var(--cw-warning);
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+    
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    
+    .tip-card {
+      background: var(--cw-accent);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    
+    .tip-card h4 {
+      color: var(--cw-purple-dark);
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+    }
+    
+    .tip-card p {
+      font-size: 0.88rem;
+      color: var(--cw-text-light);
+    }
+    
+    code {
+      background: var(--cw-accent);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+    
+    .quick-ref {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    
+    .quick-ref-item {
+      background: var(--cw-purple);
+      color: white;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    
+    .checklist {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .checklist li {
+      padding: 8px 0 8px 28px;
+      position: relative;
+      border-bottom: 1px solid var(--cw-accent);
+    }
+    
+    .checklist li::before {
+      content: "☐";
+      position: absolute;
+      left: 0;
+      color: var(--cw-purple);
+    }
+    
+    .pii-alert {
+      background: linear-gradient(135deg, #A85858, #8C4848);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 16px 0;
+    }
+    
+    .pii-alert h3 { color: white; margin-bottom: 12px; }
+    
+    .pii-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+    
+    .pii-item {
+      background: rgba(255,255,255,0.15);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+    
+    pre {
+      background: var(--cw-purple-dark);
+      color: #E8E0F0;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+    
+    .level-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+    
+    .level-beginner { background: #D4E8D4; color: #3A6B3A; }
+    .level-intermediate { background: #E0D8E8; color: #5A4870; }
+    .level-advanced { background: #E8D8C8; color: #6B5040; }
+    
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: var(--cw-text-light);
+      font-size: 0.85rem;
+    }
+    
+    @media (max-width: 600px) {
+      body { padding: 12px; }
+      header { padding: 20px; }
+      header h1 { font-size: 1.5rem; }
+      .nav-tab { padding: 8px 12px; font-size: 0.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🐋 Master Prompt Engineering Guide</h1>
+  <p>Getting the Most from AI Tools While Protecting Sensitive Information</p>
+</header>
+
+<nav class="nav-tabs">
+  <button class="nav-tab active" data-section="basics">🎯 The Basics</button>
+  <button class="nav-tab" data-section="framework">📋 CRISP Framework</button>
+  <button class="nav-tab" data-section="techniques">⚡ Techniques</button>
+  <button class="nav-tab" data-section="reality">🔍 Reality Filter</button>
+  <button class="nav-tab" data-section="underwriting">🚚 UW Examples</button>
+  <button class="nav-tab" data-section="pii">🔒 PII Safety</button>
+  <button class="nav-tab" data-section="quickref">📌 Quick Reference</button>
+</nav>
+
+<!-- BASICS SECTION -->
+<section id="basics" class="section active">
+  <div class="card">
+    <h3>What is Prompt Engineering?</h3>
+    <p>Prompt engineering is the skill of crafting clear, effective instructions for AI tools. Think of it like giving directions to a very capable but literal assistant—the better your instructions, the better the results.</p>
+  </div>
+  
+  <div class="card">
+    <h3><span class="num">1</span> Be Specific, Not Vague</h3>
+    <p>The clearer your request, the more accurate the output. Avoid general or open-ended phrasing.</p>
+    <div class="example-box bad">
+      <div class="example-label">❌ Vague Prompt</div>
+      "Tell me about trucking insurance"
+    </div>
+    <div class="example-box">
+      <div class="example-label">✅ Specific Prompt</div>
+      "Explain the key differences between Motor Truck Cargo insurance and Truckers General Liability for a long-haul refrigerated freight operation in Texas."
+    </div>
+  </div>
+  
+  <div class="card">
+    <h3><span class="num">2</span> Define the Role</h3>
+    <p>Tell the AI who it should act as—this shapes tone, expertise, and perspective.</p>
+    <div class="formula-box">
+      "Act as a [ROLE] with expertise in [DOMAIN]..."
+    </div>
+    <div class="example-box">
+      <div class="example-label">✅ Example</div>
+      "Act as an experienced commercial auto insurance underwriter. Help me understand what red flags to look for when reviewing a new trucking account application."
+    </div>
+  </div>
+  
+  <div class="card">
+    <h3><span class="num">3</span> Provide Context First</h3>
+    <p>Structure your prompt logically: background → rules/constraints → actual task.</p>
+    <div class="example-box">
+      <div class="example-label">✅ Layered Context</div>
+      <strong>Background:</strong> "I'm reviewing a commercial auto policy renewal for a fleet of 15 power units operating in the Midwest."<br><br>
+      <strong>Constraints:</strong> "The account has had 2 at-fault accidents in the past 18 months and their loss ratio is currently 72%."<br><br>
+      <strong>Task:</strong> "What questions should I ask the broker to better understand their risk improvement efforts?"
+    </div>
+  </div>
+  
+  <div class="card">
+    <h3><span class="num">4</span> State Your Desired Output Format</h3>
+    <p>Tell the AI exactly how you want the answer—bullets, tables, paragraphs, or structured sections.</p>
+    <div class="grid-2">
+      <div class="tip-card">
+        <h4>Format Options</h4>
+        <p>Bullet points, numbered lists, tables, step-by-step, summary + details, pros/cons</p>
+      </div>
+      <div class="tip-card">
+        <h4>Length Controls</h4>
+        <p>"Keep it under 200 words" or "Provide a comprehensive analysis"</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <h3><span class="num">5</span> Set Boundaries & Constraints</h3>
+    <p>Tell the AI what to avoid—this keeps responses focused and prevents unwanted content.</p>
+    <div class="formula-box">
+      "Do NOT include [X]. Avoid [Y]. Focus only on [Z]."
+    </div>
+  </div>
+</section>
+
+<!-- CRISP FRAMEWORK SECTION -->
+<section id="framework" class="section">
+  <div class="card">
+    <h3>The CRISP Framework for Effective Prompts</h3>
+    <p>Use this simple framework to structure any prompt for maximum effectiveness:</p>
+    
+    <div class="formula-box" style="font-size: 1.1rem; text-align: center;">
+      <strong>C</strong>ontext → <strong>R</strong>ole → <strong>I</strong>nstruction → <strong>S</strong>pecifics → <strong>P</strong>references
+    </div>
+  </div>
+  
+  <div class="card">
+    <h3><span class="num">C</span> Context</h3>
+    <p>Background information that helps the AI understand the situation.</p>
+    <div class="example-box">
+      <div class="example-label">✅ Example</div>
+      "We're a trucking insurance MGA that specializes in long-haul operations. Our target market is fleets with 5-50 power units operating primarily in the continental US."
+    </div>
+  </div>
+  
+  <div class="card">
+    <h3><span class="num">R</span> Role</h3>
+    <p>Who should the AI be? This shapes expertise and tone.</p>
+    <div class="example-box">
+      <div class="example-label">✅ Example</div>
+      "Act as a senior commercial auto underwriter with 15 years of experience in trucking risks."
+    </div>
+  </div>
+  
+  <div class="card">
+    <h3><span class="num">I</span> Instruction</h3>
+    <p>The specific task you want completed. Use action verbs.</p>
+    <div class="grid-2">
+      <div class="tip-card">
+        <h4>Strong Action Verbs</h4>
+        <p>Analyze, Compare, Summarize, List, Explain, Create, Draft, Review, Identify, Calculate</p>
+      </div>
+      <div class="tip-card">
+        <h4>Weak Verbs to Avoid</h4>
+        <p>Help with, Tell me about, Do something with, Look at</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <h3><span class="num">S</span> Specifics</h3>
+    <p>Details, data, constraints, and requirements.</p>
+    <div class="example-box">
+      <div class="example-label">✅ Example</div>
+      "Focus on these factors: driver experience levels, radius of operation, cargo types, and safety technology adoption. Limit analysis to the top 5 most impactful items."
+    </div>
+  </div>
+  
+  <div class="card">
+    <h3><span class="num">P</span> Preferences</h3>
+    <p>Output format, tone, length, and style preferences.</p>
+    <div class="example-box">
+      <div class="example-label">✅ Example</div>
+      "Present your findings in a bulleted list with brief explanations. Keep the tone professional but accessible. Aim for 300-400 words total."
+    </div>
+  </div>
+  
+  <div class="card">
+    <h3>Complete CRISP Example</h3>
+    <pre>CONTEXT: I'm an underwriter reviewing a new business submission 
+for a 25-truck fleet that operates refrigerated goods across 
+the Southeast region.
+
+ROLE: Act as a senior trucking insurance underwriter.
+
+INSTRUCTION: Identify the key risk factors I should investigate 
+further before quoting this account.
+
+SPECIFICS: The fleet has been in operation for 3 years, has a 
+mix of owner-operators and company drivers, and reported 
+4 claims in the past 24 months (2 cargo, 1 physical damage, 
+1 auto liability).
+
+PREFERENCES: Provide a prioritized list of 5-7 items with 
+a brief explanation of why each matters. Use bullet points.</pre>
+  </div>
+</section>
+
+<!-- TECHNIQUES SECTION -->
+<section id="techniques" class="section">
+  <div class="card">
+    <h3>Zero-Shot vs. Few-Shot Prompting <span class="level-badge level-beginner">Beginner</span></h3>
+    <p><strong>Zero-shot:</strong> Ask directly without examples—relies on the AI's training.</p>
+    <p><strong>Few-shot:</strong> Provide examples to guide the response format and quality.</p>
+    
+    <div class="example-box">
+      <div class="example-label">✅ Few-Shot Example</div>
+      <pre>Categorize these trucking operations by risk level:
+
+Example 1: "Local delivery, under 100 miles" → Low Risk
+Example 2: "Long-haul hazmat, 48 states" → High Risk
+Example 3: "Regional refrigerated, 500-mile radius" → Medium Risk
+
+Now categorize: "Intermodal container transport, port operations"</pre>
+    </div>
+  </div>
+  
+  <div class="card">
+    <h3>Chain-of-Thought (Step-by-Step) <span class="level-badge level-intermediate">Intermediate</span></h3>
+    <p>Ask the AI to think through problems step-by-step for better reasoning.</p>
+    <div class="formula-box">
+      "Think through this step-by-step..." or "Walk me through your reasoning..."
+    </div>
+    <div class="example-box">
+      <div class="example-label">✅ Example</div>
+      "I need to determine if this account meets our underwriting guidelines. Think through this step-by-step: First, check the fleet size requirement. Then, verify the years in business. Next, assess the loss history. Finally, give me your recommendation with reasoning."
+    </div>
+  </div>
+  
+  <div class="card">
+    <h3>Dual-Pass / Self-Check <span class="level-badge level-intermediate">Intermediate</span></h3>
+    <p>Have the AI draft first, then refine against criteria. Great for important documents.</p>
+    <div class="example-box">
+      <div class="example-label">✅ Example</div>
+      "Draft an email to a broker explaining why we're declining their submission. Then, review your draft and improve it to be more constructive while maintaining our position. Check that the tone is professional and includes clear next steps."
+    </div>
+  </div>
+  
+  <div class="card">
+    <h3>Multiple Viewpoints <span class="level-badge level-intermediate">Intermediate</span></h3>
+    <p>Ask the AI to consider different perspectives, then synthesize.</p>
+    <div class="example-box">
+      <div class="example-label">✅ Example</div>
+      "Analyze this pricing decision from three perspectives: (1) the underwriter focused on profitability, (2) the broker focused on competitiveness, and (3) the insured focused on coverage value. Then recommend a balanced approach."
+    </div>
+  </div>
+  
+  <div class="card">
+    <h3>Prompt Chaining <span class="level-badge level-advanced">Advanced</span></h3>
+    <p>Break complex tasks into a series of connected prompts, using each output as input for the next.</p>
+    <div class="grid-2">
+      <div class="tip-card">
+        <h4>Step 1</h4>
+        <p>"List all the risk factors in this submission..."</p>
+      </div>
+      <div class="tip-card">
+        <h4>Step 2</h4>
+        <p>"Now prioritize these by impact on loss potential..."</p>
+      </div>
+      <div class="tip-card">
+        <h4>Step 3</h4>
+        <p>"For the top 3, suggest mitigation questions..."</p>
+      </div>
+      <div class="tip-card">
+        <h4>Step 4</h4>
+        <p>"Draft my response to the broker..."</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <h3>Request Validation <span class="level-badge level-advanced">Advanced</span></h3>
+    <p>Ask the AI to check its own work for errors, gaps, or inconsistencies.</p>
+    <div class="formula-box">
+      "Now review your response. Check for: logical inconsistencies, missing information, and potential errors. Correct anything you find."
+    </div>
+  </div>
+  
+  <div class="card">
+    <h3>Enforce "I Don't Know" Honesty</h3>
+    <p>Tell the AI to admit uncertainty rather than making things up.</p>
+    <div class="example-box">
+      <div class="example-label">✅ Example</div>
+      "If you're not certain about any regulatory requirements or specific coverage details, say 'I'm not certain about this—please verify' rather than guessing."
+    </div>
+  </div>
+</section>
+
+<!-- REALITY FILTER SECTION -->
+<section id="reality" class="section">
+  <div class="card" style="border-left-color: #4A90A4;">
+    <h3 style="color: #4A90A4;">🔍 What is the Reality Filter?</h3>
+    <p>The Reality Filter is a <strong>custom system prompt</strong> you can use to make AI responses more reliable, honest, and transparent. It forces the AI to:</p>
+    <div class="grid-2" style="margin-top: 16px;">
+      <div class="tip-card" style="background: #E8F4F8;">
+        <h4>📊 Score Confidence</h4>
+        <p>Output confidence levels on every response so you know how reliable the information is</p>
+      </div>
+      <div class="tip-card" style="background: #E8F4F8;">
+        <h4>🏷️ Label Uncertainty</h4>
+        <p>Clearly mark any inferences, speculation, or unverified claims</p>
+      </div>
+      <div class="tip-card" style="background: #E8F4F8;">
+        <h4>🚫 Prevent Hallucination</h4>
+        <p>Stop the AI from presenting generated content as verified fact</p>
+      </div>
+      <div class="tip-card" style="background: #E8F4F8;">
+        <h4>🔮 Forward-Thinking</h4>
+        <p>Get pros/cons analysis and suggestions for improving low-confidence outputs</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="border-left-color: #4A90A4;">
+    <h3 style="color: #4A90A4;">📋 The Confidence Score System</h3>
+    <p>When using the Reality Filter, the AI will output a confidence score (0.0 - 1.0) with every response:</p>
+    
+    <div class="formula-box" style="background: #E8F4F8;">
+      <strong>Confidence Thresholds:</strong><br><br>
+      <span style="color: #2E7D32;">● 0.85 - 1.0</span> → High confidence, proceed with response<br>
+      <span style="color: #F57C00;">● 0.60 - 0.84</span> → Medium confidence, explanation provided for improvement<br>
+      <span style="color: #C62828;">● Below 0.60</span> → Low confidence, significant gaps identified
+    </div>
+    
+    <div class="example-box">
+      <div class="example-label">✅ Example Response with Confidence Score</div>
+      <strong>Confidence: 0.78</strong><br><br>
+      [Response content here]<br><br>
+      <strong>To increase confidence, I would need:</strong>
+      <ul style="margin: 8px 0 0 20px;">
+        <li>Specific state where the operation is domiciled</li>
+        <li>Exact commodity types being hauled</li>
+        <li>Confirmation of whether they have any owner-operators</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" style="border-left-color: #4A90A4;">
+    <h3 style="color: #4A90A4;">🏷️ Required Labels for Unverified Content</h3>
+    <p>The Reality Filter requires AI to prefix uncertain statements with clear labels:</p>
+    
+    <div class="grid-2">
+      <div class="tip-card">
+        <h4>[Inference]</h4>
+        <p>Conclusions drawn from available data but not explicitly stated</p>
+      </div>
+      <div class="tip-card">
+        <h4>[Speculation]</h4>
+        <p>Possibilities or predictions without supporting evidence</p>
+      </div>
+      <div class="tip-card">
+        <h4>[Unverified]</h4>
+        <p>Claims that cannot be confirmed from the AI's knowledge base</p>
+      </div>
+      <div class="tip-card">
+        <h4>[Pattern-Based]</h4>
+        <p>Observations based on common patterns, not verified facts</p>
+      </div>
+    </div>
+    
+    <div class="example-box">
+      <div class="example-label">✅ Properly Labeled Response</div>
+      "Based on the fleet size and operation type, the minimum liability requirement is $750,000. <strong>[Inference]</strong> Given the refrigerated cargo, they likely haul produce or pharmaceuticals. <strong>[Speculation]</strong> If they operate in California, additional MCS-90 endorsement requirements may apply—<strong>[Unverified]</strong> I cannot confirm current CA-specific regulations without access to current DOT filings."
+    </div>
+  </div>
+
+  <div class="card" style="border-left-color: #C62828;">
+    <h3 style="color: #C62828;">⚠️ Flagged Words Requiring Verification</h3>
+    <p>These absolute/guarantee words must be labeled unless backed by a verified source:</p>
+    
+    <div class="pii-list" style="margin-top: 12px;">
+      <div class="pii-item" style="background: #FFEBEE; color: #C62828;">Prevent</div>
+      <div class="pii-item" style="background: #FFEBEE; color: #C62828;">Guarantee</div>
+      <div class="pii-item" style="background: #FFEBEE; color: #C62828;">Will never</div>
+      <div class="pii-item" style="background: #FFEBEE; color: #C62828;">Fixes</div>
+      <div class="pii-item" style="background: #FFEBEE; color: #C62828;">Eliminates</div>
+      <div class="pii-item" style="background: #FFEBEE; color: #C62828;">Ensures that</div>
+      <div class="pii-item" style="background: #FFEBEE; color: #C62828;">Always</div>
+      <div class="pii-item" style="background: #FFEBEE; color: #C62828;">Never fails</div>
+    </div>
+    
+    <div class="example-box bad" style="margin-top: 16px;">
+      <div class="example-label">❌ Unacceptable</div>
+      "Adding dash cams <strong>will prevent</strong> fraudulent claims and <strong>guarantees</strong> lower premiums."
+    </div>
+    <div class="example-box">
+      <div class="example-label">✅ Properly Qualified</div>
+      "Adding dash cams <strong>[Inference]</strong> may help reduce fraudulent claims based on industry patterns, and <strong>[Speculation]</strong> could potentially contribute to lower premiums depending on carrier guidelines."
+    </div>
+  </div>
+
+  <div class="card" style="border-left-color: #4A90A4;">
+    <h3 style="color: #4A90A4;">⚖️ Pros/Cons for Brainstorming</h3>
+    <p>When brainstorming or exploring options, the Reality Filter encourages forward-thinking analysis:</p>
+    
+    <div class="example-box">
+      <div class="example-label">✅ Brainstorming Output Format</div>
+      <strong>Question:</strong> Should we expand into hazmat trucking coverage?<br><br>
+      <strong>Confidence: 0.72</strong> (market-specific data would improve this)<br><br>
+      <strong>PROS:</strong>
+      <ul style="margin: 4px 0 8px 20px;">
+        <li>Higher premium per unit [Verified - industry standard]</li>
+        <li>Less competition in specialty markets [Inference]</li>
+        <li>Diversification of book [Verified]</li>
+      </ul>
+      <strong>CONS:</strong>
+      <ul style="margin: 4px 0 8px 20px;">
+        <li>Higher severity potential [Verified]</li>
+        <li>Specialized underwriting expertise required [Verified]</li>
+        <li>Regulatory complexity varies by state [Unverified - needs research]</li>
+      </ul>
+      <strong>Forward-Looking Considerations:</strong>
+      <ul style="margin: 4px 0 0 20px;">
+        <li>[Speculation] EV adoption may change hazmat transport dynamics in 5-10 years</li>
+        <li>[Inference] Training investment would be needed based on current team expertise</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pii-alert" style="background: linear-gradient(135deg, #4A90A4, #3A7A94);">
+    <h3>📋 Copy-Paste: The Complete Reality Filter Prompt</h3>
+    <p style="margin-bottom: 16px;">Add this to your system prompt or paste at the beginning of important conversations:</p>
+  </div>
+  
+  <div class="card">
+    <pre style="font-size: 0.8rem; line-height: 1.6;">REALITY FILTER DIRECTIVE
+
+CONFIDENCE SCORING:
+• Output your confidence score (0.0-1.0) on every response
+• If confidence is below 0.85, explain what information would 
+  increase it
+• For brainstorming prompts, list pros/cons with verification 
+  labels
+• Take a forward-thinking view and flag speculation clearly
+
+VERIFICATION REQUIREMENTS:
+• Never present generated, inferred, speculated, or deduced 
+  content as fact
+• If you cannot verify something directly, say:
+  - "I cannot verify this."
+  - "I do not have access to that information."
+  - "My knowledge base does not contain that."
+
+LABELING REQUIREMENTS:
+• Label unverified content at the START of the sentence:
+  [Inference] [Speculation] [Unverified] [Pattern-Based]
+• If ANY part of a response is unverified, label it clearly
+• Do not paraphrase or reinterpret my input unless I request it
+
+FLAGGED WORDS - Label these claims unless directly sourced:
+Prevent, Guarantee, Will never, Fixes, Eliminates, Ensures that
+
+LLM BEHAVIOR CLAIMS:
+• For claims about AI/LLM behavior (including yourself), include:
+  [Inference] or [Unverified] with a note that it's based on 
+  observed patterns, not verified documentation
+
+CLARIFICATION:
+• Ask for clarification if information is missing
+• Do not guess or fill gaps with assumptions
+
+SELF-CORRECTION:
+• If you break this directive, immediately say:
+  "Correction: I previously made an unverified claim. That was 
+  incorrect and should have been labeled."</pre>
+    <button onclick="navigator.clipboard.writeText(this.previousElementSibling.textContent);this.textContent='✓ Copied!';setTimeout(()=>this.textContent='📋 Copy Reality Filter',2000)" style="margin-top: 12px; padding: 10px 20px; background: var(--cw-purple); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">📋 Copy Reality Filter</button>
+  </div>
+
+  <div class="card" style="border-left-color: #4A90A4;">
+    <h3 style="color: #4A90A4;">💡 When to Use the Reality Filter</h3>
+    <div class="grid-2">
+      <div class="tip-card" style="background: #E8F8E8;">
+        <h4>✅ Great For</h4>
+        <p>Regulatory questions, coverage interpretations, risk analysis, underwriting decisions, anything where accuracy is critical</p>
+      </div>
+      <div class="tip-card" style="background: #FFF8E8;">
+        <h4>⚡ Optional For</h4>
+        <p>Creative brainstorming, draft emails, general explanations, training content where you'll verify independently</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="warning-box">
+    <h4>💡 Pro Tip: Combine with CRISP Framework</h4>
+    <p>For maximum effectiveness, use the Reality Filter alongside the CRISP framework. Start with the Reality Filter directive, then structure your actual question using Context → Role → Instruction → Specifics → Preferences.</p>
+  </div>
+</section>
+
+<!-- UNDERWRITING EXAMPLES SECTION -->
+<section id="underwriting" class="section">
+  <div class="card">
+    <h3>🚚 Underwriting Use Cases</h3>
+    <p>Practical prompts for common underwriting tasks. Remember: <strong>Never include real PII—use generic descriptions instead.</strong></p>
+  </div>
+  
+  <div class="card">
+    <h3>Submission Analysis</h3>
+    <pre>CONTEXT: I'm reviewing a new business submission for 
+commercial trucking insurance.
+
+ROLE: Act as an experienced trucking underwriter.
+
+TASK: Based on the following account characteristics, 
+identify key risk factors and questions I should ask:
+
+- Fleet size: 18 power units
+- Operation: Regional LTL, 400-mile radius
+- Years in business: 5
+- Commodities: General freight, some refrigerated
+- Loss history: 3 claims in 36 months (1 large cargo claim)
+- Driver tenure: Mix of experienced and newer drivers
+
+OUTPUT: Provide a prioritized list of 5-7 risk factors 
+and 3-4 specific questions for the broker.</pre>
+  </div>
+  
+  <div class="card">
+    <h3>Coverage Comparison</h3>
+    <pre>ROLE: Act as a commercial insurance coverage specialist.
+
+TASK: Create a comparison of Motor Truck Cargo coverage 
+versus Truckers General Liability for a client who is 
+confused about the difference.
+
+FORMAT: Use a simple two-column comparison covering:
+- What it covers
+- What it doesn't cover
+- When claims typically occur
+- Key coverage limits to consider
+
+Keep explanations simple enough for a new broker 
+to understand.</pre>
+  </div>
+  
+  <div class="card">
+    <h3>Loss Run Analysis</h3>
+    <pre>CONTEXT: I have loss run data showing claim patterns 
+for a trucking account seeking renewal.
+
+TASK: Help me analyze these claim characteristics and 
+identify trends:
+
+Claim patterns (generalized):
+- 2 backing accidents in parking lots (minor PD)
+- 1 rear-end collision on highway (moderate BI)
+- 1 cargo shortage claim
+- 1 weather-related accident
+
+Questions to answer:
+1. What patterns do you see?
+2. What driver training might help?
+3. What questions should I ask about their 
+   safety program?
+4. Any red flags for renewal?</pre>
+  </div>
+  
+  <div class="card">
+    <h3>Broker Communication</h3>
+    <pre>ROLE: Act as a professional underwriter communicator.
+
+TASK: Draft an email to a broker explaining that we 
+need additional information before we can quote 
+their submission.
+
+TONE: Professional, helpful, not demanding
+
+NEEDED ITEMS:
+- Updated driver list with MVRs
+- Current vehicle schedule
+- Explanation of the large cargo claim from last year
+- Safety program documentation
+
+CONSTRAINTS: Keep under 200 words. Be specific about 
+what we need and why. Include a reasonable deadline.</pre>
+  </div>
+  
+  <div class="card">
+    <h3>Regulatory Quick Reference</h3>
+    <pre>ROLE: Act as a trucking insurance regulatory specialist.
+
+TASK: Summarize the key insurance requirements for 
+commercial trucking operations, including:
+
+1. Federal minimum liability limits by operation type
+2. Cargo insurance requirements
+3. Common state-specific variations
+4. Filing requirements (BMC-91, etc.)
+
+FORMAT: Organized by topic with bullet points.
+
+NOTE: Flag anything that may have changed recently 
+or varies significantly by state—I'll verify those 
+details separately.</pre>
+  </div>
+  
+  <div class="card">
+    <h3>Training / Knowledge Building</h3>
+    <pre>ROLE: Act as a trucking insurance instructor.
+
+TASK: Explain the concept of "radius of operation" 
+and why it matters for underwriting trucking risks.
+
+INCLUDE:
+- Definition and how it's typically classified
+- Why it impacts risk and pricing
+- Common misrepresentations to watch for
+- Questions to ask to verify actual operations
+
+AUDIENCE: New underwriter with 6 months of experience
+
+FORMAT: Conversational explanation with practical examples</pre>
+  </div>
+</section>
+
+<!-- PII SAFETY SECTION -->
+<section id="pii" class="section">
+  <div class="pii-alert">
+    <h3>⚠️ CRITICAL: Protecting Private Information</h3>
+    <p>AI tools process data on external servers. Never input actual personally identifiable information (PII) or sensitive business data.</p>
+    
+    <div class="pii-list">
+      <div class="pii-item">❌ Real names</div>
+      <div class="pii-item">❌ DOT numbers</div>
+      <div class="pii-item">❌ SSN / EIN</div>
+      <div class="pii-item">❌ Driver's licenses</div>
+      <div class="pii-item">❌ Policy numbers</div>
+      <div class="pii-item">❌ VIN numbers</div>
+      <div class="pii-item">❌ Actual addresses</div>
+      <div class="pii-item">❌ Phone numbers</div>
+      <div class="pii-item">❌ Email addresses</div>
+      <div class="pii-item">❌ Bank accounts</div>
+      <div class="pii-item">❌ Claim numbers</div>
+      <div class="pii-item">❌ MC numbers</div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <h3>✅ Safe Alternatives</h3>
+    <p>Use generic descriptions instead of real data:</p>
+    
+    <div class="grid-2">
+      <div class="example-box bad">
+        <div class="example-label">❌ Don't Write</div>
+        "Review the submission for ABC Trucking LLC, DOT# 1234567, located at 123 Main St, Chicago IL"
+      </div>
+      <div class="example-box">
+        <div class="example-label">✅ Do Write</div>
+        "Review a submission for a mid-size trucking company based in the Midwest with 5 years in operation"
+      </div>
+    </div>
+    
+    <div class="grid-2">
+      <div class="example-box bad">
+        <div class="example-label">❌ Don't Write</div>
+        "Driver John Smith, DOB 01/15/1980, CDL# D123456789, has 3 violations..."
+      </div>
+      <div class="example-box">
+        <div class="example-label">✅ Do Write</div>
+        "A driver with 15 years experience has 3 moving violations in 36 months including..."
+      </div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <h3>The Generalization Technique</h3>
+    <p>Convert specific data to categorical descriptions:</p>
+    
+    <div class="formula-box">
+      <strong>Specific → General Pattern:</strong><br><br>
+      "ABC Trucking" → "a regional carrier"<br>
+      "Chicago, IL" → "a major Midwest metro area"<br>
+      "47 trucks" → "a medium-sized fleet (40-60 units)"<br>
+      "$2.3M in claims" → "claims exceeding $2M"<br>
+      "John Smith" → "the primary driver" or "Driver A"
+    </div>
+  </div>
+  
+  <div class="warning-box">
+    <h4>⚠️ When in Doubt, Leave It Out</h4>
+    <p>If you're unsure whether information is sensitive, err on the side of caution and use a generic description instead. The AI doesn't need real identifiers to provide useful analysis.</p>
+  </div>
+  
+  <div class="card">
+    <h3>Safe Data Categories</h3>
+    <p>These types of <strong>generalized</strong> information are typically safe to share:</p>
+    <ul class="checklist">
+      <li>Operation type (long-haul, regional, local)</li>
+      <li>Commodity categories (dry van, refrigerated, flatbed)</li>
+      <li>Fleet size ranges</li>
+      <li>General geographic regions</li>
+      <li>Years in business</li>
+      <li>Claim counts and general patterns (not specifics)</li>
+      <li>Coverage types and limit ranges</li>
+      <li>Industry benchmarks and standards</li>
+      <li>General regulatory requirements</li>
+    </ul>
+  </div>
+</section>
+
+<!-- QUICK REFERENCE SECTION -->
+<section id="quickref" class="section">
+  <div class="card">
+    <h3>📌 Prompt Starter Templates</h3>
+    <p>Copy and customize these templates for common tasks:</p>
+  </div>
+  
+  <div class="card">
+    <h3>General Analysis</h3>
+    <pre>ROLE: Act as [specific role].
+CONTEXT: [Background information]
+TASK: [Specific action verb + what you need]
+SPECIFICS: [Details, constraints, data]
+FORMAT: [How you want the output]
+NOTE: Do not fabricate information—flag uncertainties.</pre>
+  </div>
+  
+  <div class="card">
+    <h3>Document Drafting</h3>
+    <pre>ROLE: Act as a professional insurance communicator.
+TASK: Draft a [type of document] for [audience].
+PURPOSE: [What this document should accomplish]
+TONE: [Professional/friendly/formal/etc.]
+INCLUDE: [Key points that must be covered]
+LENGTH: [Word count or format guidance]
+AVOID: [What not to include]</pre>
+  </div>
+  
+  <div class="card">
+    <h3>Learning / Explanation</h3>
+    <pre>ROLE: Act as an experienced [domain] instructor.
+TASK: Explain [concept] to someone who [experience level].
+INCLUDE: 
+- Definition and key components
+- Why it matters in practice
+- Common misconceptions
+- Real-world examples
+FORMAT: Conversational, with practical examples</pre>
+  </div>
+  
+  <div class="card">
+    <h3>🎯 Quick Tips Checklist</h3>
+    <ul class="checklist">
+      <li>Start with context before making requests</li>
+      <li>Assign a specific role to shape expertise</li>
+      <li>Use action verbs (analyze, compare, draft)</li>
+      <li>Specify your desired output format</li>
+      <li>Set boundaries on what to avoid</li>
+      <li>Ask for step-by-step reasoning on complex tasks</li>
+      <li>Request the AI validate its own response</li>
+      <li>Tell it to admit uncertainty vs. guessing</li>
+      <li>Never include real PII—use generic descriptions</li>
+      <li>Iterate and refine—follow up for better results</li>
+    </ul>
+  </div>
+  
+  <div class="card">
+    <h3>Common Mistakes to Avoid</h3>
+    <div class="grid-2">
+      <div class="tip-card" style="background: #FDF5F5;">
+        <h4>❌ Too Vague</h4>
+        <p>"Help me with this submission"</p>
+      </div>
+      <div class="tip-card">
+        <h4>✅ Specific</h4>
+        <p>"Identify the top 5 risk factors in this fleet submission"</p>
+      </div>
+      <div class="tip-card" style="background: #FDF5F5;">
+        <h4>❌ No Context</h4>
+        <p>"What questions should I ask?"</p>
+      </div>
+      <div class="tip-card">
+        <h4>✅ With Context</h4>
+        <p>"For a new trucking account with high driver turnover, what questions should I ask about their safety program?"</p>
+      </div>
+      <div class="tip-card" style="background: #FDF5F5;">
+        <h4>❌ No Format</h4>
+        <p>"Tell me about cargo insurance"</p>
+      </div>
+      <div class="tip-card">
+        <h4>✅ Clear Format</h4>
+        <p>"Summarize cargo insurance in 5 bullet points suitable for explaining to a new broker"</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="quick-ref">
+    <div class="quick-ref-item">🎯 Be Specific</div>
+    <div class="quick-ref-item">🎭 Define the Role</div>
+    <div class="quick-ref-item">📝 Give Context</div>
+    <div class="quick-ref-item">📊 State Format</div>
+    <div class="quick-ref-item">🚫 Set Boundaries</div>
+    <div class="quick-ref-item">📋 Show Examples</div>
+    <div class="quick-ref-item">🔄 Iterate & Refine</div>
+    <div class="quick-ref-item">🔒 Protect PII</div>
+    <div class="quick-ref-item">🔍 Use Reality Filter</div>
+  </div>
+  
+  <div class="card" style="border-left-color: #4A90A4; margin-top: 16px;">
+    <h3 style="color: #4A90A4;">🔍 Reality Filter Quick Reference</h3>
+    <p style="margin-bottom: 12px;">For critical decisions, add the Reality Filter to get:</p>
+    <div class="formula-box" style="background: #E8F4F8;">
+      <strong>Confidence Score</strong> → Know how reliable the response is<br>
+      <strong>[Labels]</strong> → See what's inference vs. fact<br>
+      <strong>Improvement Path</strong> → Learn what info would help<br>
+      <strong>Pros/Cons</strong> → Get balanced analysis on options
+    </div>
+    <p style="margin-top: 12px; font-size: 0.9rem; color: var(--cw-text-light);">See the <strong>Reality Filter</strong> tab for the full copy-paste prompt.</p>
+  </div>
+</section>
+
+<footer>
+  <p>Cover Whale Prompt Engineering Guide v1.0 | For internal use</p>
+</footer>
+
+<script>
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.section).classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cover Whale - Master Prompt Engineering Guide</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --cw-purple: #6B4E8C;
+            --cw-purple-dark: #4A3562;
+            --cw-bg: #F8F6FA;
+            --cw-text: #2D2640;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--cw-bg);
+            color: var(--cw-text);
+        }
+
+        /* Login Screen */
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(107, 78, 140, 0.15);
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            color: var(--cw-purple);
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #5A5270;
+            margin-bottom: 32px;
+            font-size: 1rem;
+        }
+
+        .info-box {
+            background: var(--cw-bg);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            text-align: left;
+            border-left: 4px solid var(--cw-purple);
+        }
+
+        .info-box h3 {
+            color: var(--cw-purple);
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .info-box p {
+            font-size: 0.9rem;
+            color: #5A5270;
+            line-height: 1.5;
+        }
+
+        .login-btn {
+            background: linear-gradient(135deg, var(--cw-purple-dark), var(--cw-purple));
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(107, 78, 140, 0.3);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            background: #FDF5F5;
+            border: 1px solid #E8CCCC;
+            color: #A85858;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Content Frame */
+        .content-container {
+            display: none;
+            width: 100%;
+            height: 100vh;
+        }
+
+        .content-container.visible {
+            display: block;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .footer-note {
+            margin-top: 24px;
+            font-size: 0.85rem;
+            color: #8B6EAC;
+        }
+
+        @media (max-width: 600px) {
+            .login-box {
+                padding: 30px 20px;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-box">
+            <div class="logo">🐋</div>
+            <h1>Master Prompt Engineering Guide</h1>
+            <p class="subtitle">Cover Whale Internal Resource</p>
+
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+            <div class="info-box">
+                <h3>🔒 Authentication Required</h3>
+                <p>This resource is available exclusively to Cover Whale employees. Please sign in with your @coverwhale.com email address.</p>
+            </div>
+
+            <button id="loginBtn" class="login-btn" onclick="login()">
+                Sign in with Google
+            </button>
+
+            <p class="footer-note">
+                Secure authentication via Google OAuth
+            </p>
+        </div>
+    </div>
+
+    <!-- Content Frame (hidden until authenticated) -->
+    <div id="contentFrame" class="content-container">
+        <iframe id="guideFrame" src="guide.html" title="Master Prompt Engineering Guide"></iframe>
+    </div>
+
+    <script>
+        const AUTH_API_URL = 'https://coverwhale-auth.vercel.app';
+
+        // Check if user is already authenticated
+        window.addEventListener('load', () => {
+            checkAuth();
+        });
+
+        // Check for token in URL (from callback)
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+
+        if (token) {
+            // Store token and verify it
+            localStorage.setItem('cw_auth_token', token);
+            // Clean URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+            checkAuth();
+        }
+
+        async function checkAuth() {
+            const token = localStorage.getItem('cw_auth_token');
+
+            if (!token) {
+                showLogin();
+                return;
+            }
+
+            try {
+                const response = await fetch(`${AUTH_API_URL}/api/verify`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.valid) {
+                        showContent();
+                        return;
+                    }
+                }
+
+                // Token invalid, clear it
+                localStorage.removeItem('cw_auth_token');
+                showLogin();
+
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                showLogin();
+            }
+        }
+
+        function login() {
+            const btn = document.getElementById('loginBtn');
+            btn.innerHTML = '<span class="loading"></span> Redirecting...';
+            btn.disabled = true;
+
+            // Get current page URL for return
+            const returnUrl = window.location.href.split('?')[0];
+
+            // Redirect to auth endpoint
+            window.location.href = `${AUTH_API_URL}/api/auth?return_url=${encodeURIComponent(returnUrl)}`;
+        }
+
+        function showLogin() {
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('contentFrame').classList.remove('visible');
+        }
+
+        function showContent() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('contentFrame').classList.add('visible');
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+
+            const btn = document.getElementById('loginBtn');
+            btn.innerHTML = 'Sign in with Google';
+            btn.disabled = false;
+        }
+    </script>
+</body>
+</html>
