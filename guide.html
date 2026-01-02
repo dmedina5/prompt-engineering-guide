@@ -5,54 +5,56 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cover Whale - Master Prompt Engineering Guide</title>
   <style>
-    /* HIDE CONTENT BY DEFAULT - Show only after auth check */
-    body {
-      opacity: 0 !important;
-      visibility: hidden !important;
+    /* CRITICAL: Hide entire page by default */
+    html {
+      display: none !important;
     }
-    body.auth-verified {
-      opacity: 1 !important;
-      visibility: visible !important;
+    html.auth-passed {
+      display: block !important;
     }
   </style>
   <script>
-    // AUTH PROTECTION - Verify token before showing content
-    (async function() {
+    // BLOCKING AUTH CHECK - Prevents ANY content from rendering
+    (function() {
+      'use strict';
       const AUTH_API_URL = 'https://coverwhale-auth.vercel.app';
 
-      // If in iframe, show content immediately (normal flow)
+      // If in iframe, allow immediately (normal authenticated flow)
       if (window.self !== window.top) {
-        document.body.classList.add('auth-verified');
+        document.documentElement.classList.add('auth-passed');
         return;
       }
 
-      // Direct access - require authentication
+      // Direct access - check token synchronously
       const token = localStorage.getItem('cw_auth_token');
 
       if (!token) {
-        window.location.href = '/prompt-engineering-guide/';
+        // No token - redirect immediately (page stays hidden)
+        window.location.replace('/prompt-engineering-guide/');
         return;
       }
 
-      // Verify token with backend
-      try {
-        const response = await fetch(`${AUTH_API_URL}/api/verify`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const data = await response.json();
+      // Have token - verify asynchronously
+      (async function() {
+        try {
+          const response = await fetch(`${AUTH_API_URL}/api/verify`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          const data = await response.json();
 
-        if (data.valid) {
-          // Token valid - show content
-          document.body.classList.add('auth-verified');
-        } else {
-          // Token invalid - redirect to login
-          localStorage.removeItem('cw_auth_token');
-          window.location.href = '/prompt-engineering-guide/';
+          if (data.valid) {
+            // Token valid - show page
+            document.documentElement.classList.add('auth-passed');
+          } else {
+            // Token invalid - clear and redirect
+            localStorage.removeItem('cw_auth_token');
+            window.location.replace('/prompt-engineering-guide/');
+          }
+        } catch (error) {
+          console.error('Auth verification failed:', error);
+          window.location.replace('/prompt-engineering-guide/');
         }
-      } catch (error) {
-        console.error('Auth verification failed:', error);
-        window.location.href = '/prompt-engineering-guide/';
-      }
+      })();
     })();
   </script>
   <style>
