@@ -4,6 +4,37 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cover Whale - Master Prompt Engineering Guide</title>
+  <script>
+    // AUTH PROTECTION - Verify token before showing content
+    (async function() {
+      const AUTH_API_URL = 'https://coverwhale-auth.vercel.app';
+      const token = localStorage.getItem('cw_auth_token');
+
+      // If accessed directly (not in iframe), redirect to index for auth
+      if (window.self === window.top) {
+        if (!token) {
+          window.location.href = '/prompt-engineering-guide/';
+          return;
+        }
+
+        // Verify token
+        try {
+          const response = await fetch(`${AUTH_API_URL}/api/verify`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          const data = await response.json();
+
+          if (!data.valid) {
+            localStorage.removeItem('cw_auth_token');
+            window.location.href = '/prompt-engineering-guide/';
+          }
+        } catch (error) {
+          console.error('Auth verification failed:', error);
+          window.location.href = '/prompt-engineering-guide/';
+        }
+      }
+    })();
+  </script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
