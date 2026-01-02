@@ -74,7 +74,7 @@
       --cw-warning: #C4874D;
       --cw-danger: #A85858;
     }
-    
+
     body {
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       background: var(--cw-bg);
@@ -83,6 +83,54 @@
       padding: 20px;
       max-width: 1200px;
       margin: 0 auto;
+    }
+
+    /* Logout Banner */
+    .logout-banner {
+      background: linear-gradient(135deg, var(--cw-purple-dark), var(--cw-purple));
+      color: white;
+      padding: 12px 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(107,78,140,0.2);
+    }
+
+    .logout-banner .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.9rem;
+    }
+
+    .logout-banner .user-icon {
+      background: rgba(255,255,255,0.2);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .logout-btn {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .logout-btn:hover {
+      background: rgba(255,255,255,0.3);
+      border-color: rgba(255,255,255,0.5);
     }
     
     header {
@@ -332,6 +380,42 @@
   </style>
 </head>
 <body>
+
+<!-- Logout Banner (only visible when NOT in iframe) -->
+<div class="logout-banner" id="logoutBanner" style="display: none;">
+  <div class="user-info">
+    <div class="user-icon">👤</div>
+    <span id="userEmail">Signed in</span>
+  </div>
+  <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+</div>
+
+<script>
+  // Show logout banner only if NOT in iframe
+  if (window.self === window.top) {
+    document.getElementById('logoutBanner').style.display = 'flex';
+
+    // Try to get user email from token (optional enhancement)
+    try {
+      const token = localStorage.getItem('cw_auth_token');
+      if (token) {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (payload.email) {
+          document.getElementById('userEmail').textContent = payload.email;
+        }
+      }
+    } catch (e) {
+      // If can't parse token, just show generic message
+    }
+  }
+
+  function logout() {
+    if (confirm('Are you sure you want to logout?')) {
+      localStorage.removeItem('cw_auth_token');
+      window.location.href = '/prompt-engineering-guide/';
+    }
+  }
+</script>
 
 <header>
   <h1>🐋 Master Prompt Engineering Guide</h1>
