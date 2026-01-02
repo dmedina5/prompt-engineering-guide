@@ -4,40 +4,60 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cover Whale - Master Prompt Engineering Guide</title>
+  <style>
+    /* HIDE CONTENT BY DEFAULT - Show only after auth check */
+    body {
+      opacity: 0 !important;
+      visibility: hidden !important;
+    }
+    body.auth-verified {
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+  </style>
   <script>
     // AUTH PROTECTION - Verify token before showing content
     (async function() {
       const AUTH_API_URL = 'https://coverwhale-auth.vercel.app';
+
+      // If in iframe, show content immediately (normal flow)
+      if (window.self !== window.top) {
+        document.body.classList.add('auth-verified');
+        return;
+      }
+
+      // Direct access - require authentication
       const token = localStorage.getItem('cw_auth_token');
 
-      // If accessed directly (not in iframe), redirect to index for auth
-      if (window.self === window.top) {
-        if (!token) {
-          window.location.href = '/prompt-engineering-guide/';
-          return;
-        }
+      if (!token) {
+        window.location.href = '/prompt-engineering-guide/';
+        return;
+      }
 
-        // Verify token
-        try {
-          const response = await fetch(`${AUTH_API_URL}/api/verify`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-          });
-          const data = await response.json();
+      // Verify token with backend
+      try {
+        const response = await fetch(`${AUTH_API_URL}/api/verify`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
 
-          if (!data.valid) {
-            localStorage.removeItem('cw_auth_token');
-            window.location.href = '/prompt-engineering-guide/';
-          }
-        } catch (error) {
-          console.error('Auth verification failed:', error);
+        if (data.valid) {
+          // Token valid - show content
+          document.body.classList.add('auth-verified');
+        } else {
+          // Token invalid - redirect to login
+          localStorage.removeItem('cw_auth_token');
           window.location.href = '/prompt-engineering-guide/';
         }
+      } catch (error) {
+        console.error('Auth verification failed:', error);
+        window.location.href = '/prompt-engineering-guide/';
       }
     })();
   </script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    
+
     :root {
       --cw-purple: #6B4E8C;
       --cw-purple-light: #8B6EAC;
