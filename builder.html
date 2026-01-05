@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cover Whale AI Prompt Builder</title>
+    <style>
+        /* CRITICAL: Hide entire page by default */
+        html {
+            display: none !important;
+        }
+        html.auth-passed {
+            display: block !important;
+        }
+    </style>
+    <script>
+        // BLOCKING AUTH CHECK - Prevents ANY content from rendering
+        (function() {
+            'use strict';
+            const AUTH_API_URL = 'https://coverwhale-auth.vercel.app';
+
+            // If in iframe, allow immediately (normal authenticated flow)
+            if (window.self !== window.top) {
+                document.documentElement.classList.add('auth-passed');
+                return;
+            }
+
+            // Direct access - check token synchronously
+            const token = localStorage.getItem('cw_auth_token');
+
+            if (!token) {
+                // No token - redirect immediately (page stays hidden)
+                window.location.replace('/prompt-engineering-guide/');
+                return;
+            }
+
+            // Have token - verify asynchronously
+            (async function() {
+                try {
+                    const response = await fetch(`${AUTH_API_URL}/api/verify`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await response.json();
+
+                    if (data.valid) {
+                        // Token valid - show page
+                        document.documentElement.classList.add('auth-passed');
+                    } else {
+                        // Token invalid - clear and redirect
+                        localStorage.removeItem('cw_auth_token');
+                        window.location.replace('/prompt-engineering-guide/');
+                    }
+                } catch (error) {
+                    console.error('Auth verification failed:', error);
+                    window.location.replace('/prompt-engineering-guide/');
+                }
+            })();
+        })();
+    </script>
+    <style>
+        :root {
+            --cw-purple: #6B4E8C;
+            --cw-purple-light: #8B6EAC;
+            --cw-purple-dark: #4A3562;
+            --cw-accent: #E8E0F0;
+            --cw-bg: #F8F6FA;
+            --cw-card: #FFFFFF;
+            --cw-text: #2D2640;
+            --cw-text-light: #5A5270;
+            --cw-success: #5A8C6B;
+            --cw-warning: #C4874D;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--cw-bg);
+            color: var(--cw-text);
+            padding: 20px;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.6;
+        }
+
+        /* Logout Banner */
+        .logout-banner {
+            background: linear-gradient(135deg, var(--cw-purple-dark), var(--cw-purple));
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(107,78,140,0.2);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .logout-banner .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.9rem;
+        }
+
+        .logout-banner .user-icon {
+            background: rgba(255,255,255,0.2);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        .container {
+            background: var(--cw-card);
+            max-width: 800px;
+            width: 100%;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(107, 78, 140, 0.15);
+            overflow: hidden;
+            border: 1px solid var(--cw-accent);
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--cw-purple-dark), var(--cw-purple));
+            color: white;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            margin: 0;
+            opacity: 0.95;
+            font-size: 1rem;
+        }
+
+        .mode-toggle {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 12px;
+            margin-top: 16px;
+            border-radius: 8px;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .mode-btn {
+            padding: 8px 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: transparent;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .mode-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .mode-btn.active {
+            background: white;
+            color: var(--cw-purple);
+            border-color: white;
+        }
+
+        .content {
+            padding: 24px;
+        }
+
+        .info-banner {
+            background: var(--cw-accent);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: var(--cw-purple-dark);
+            border-left: 4px solid var(--cw-purple);
+        }
+
+        .info-banner strong {
+            color: var(--cw-purple);
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group.hidden {
+            display: none;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            color: var(--cw-text);
+        }
+
+        label .crisp-label {
+            display: inline-block;
+            background: var(--cw-purple);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-right: 6px;
+        }
+
+        select, input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--cw-accent);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--cw-purple);
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .hint {
+            font-size: 0.85rem;
+            color: var(--cw-text-light);
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: #FFF8F0;
+            border-radius: 8px;
+            border: 1px solid #E8D4C0;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.3s;
+            border-radius: 26px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--cw-success);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        .toggle-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--cw-text);
+        }
+
+        .result-box {
+            background: var(--cw-purple-dark);
+            color: #E8E0F0;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 24px;
+            position: relative;
+        }
+
+        .result-label {
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: block;
+            font-size: 1rem;
+            color: white;
+        }
+
+        .result-text {
+            font-family: 'Consolas', 'Monaco', monospace;
+            white-space: pre-wrap;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--cw-purple);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--cw-purple-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--cw-accent);
+            color: var(--cw-purple);
+        }
+
+        .btn-secondary:hover {
+            background: var(--cw-purple-light);
+            color: white;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--cw-success);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-weight: 500;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        .example-prompts {
+            margin-top: 20px;
+            padding: 16px;
+            background: #F0F8F2;
+            border: 1px solid #C8E0CC;
+            border-radius: 8px;
+        }
+
+        .example-prompts h4 {
+            color: var(--cw-success);
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+
+        .example-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            background: white;
+            border: 1px solid #C8E0CC;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .example-btn:hover {
+            background: var(--cw-success);
+            color: white;
+            border-color: var(--cw-success);
+        }
+
+        .suggestions-box {
+            margin-top: 12px;
+            padding: 16px;
+            background: linear-gradient(135deg, #F0F4FF 0%, #E8F0FE 100%);
+            border: 2px solid #B8D4FF;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(107, 78, 140, 0.1);
+        }
+
+        .suggestions-header {
+            font-weight: 600;
+            color: var(--cw-purple-dark);
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+        }
+
+        .suggestion-item {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: white;
+            border: 1px solid #B8D4FF;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            line-height: 1.5;
+        }
+
+        .suggestion-item:hover {
+            background: var(--cw-purple);
+            color: white;
+            border-color: var(--cw-purple);
+            transform: translateX(4px);
+        }
+
+        .suggestion-item:last-child {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 12px; }
+            .header { padding: 20px; }
+            .header h2 { font-size: 1.3rem; }
+            .content { padding: 16px; }
+            .button-group { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Logout Banner (only visible when NOT in iframe) -->
+<div class="logout-banner" id="logoutBanner" style="display: none;">
+  <div class="user-info">
+    <div class="user-icon">👤</div>
+    <span id="userEmail">Signed in</span>
+  </div>
+  <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+</div>
+
+<script>
+  // Show logout banner only if NOT in iframe
+  if (window.self === window.top) {
+    document.getElementById('logoutBanner').style.display = 'flex';
+
+    // Try to get user email from token
+    try {
+      const token = localStorage.getItem('cw_auth_token');
+      if (token) {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (payload.email) {
+          document.getElementById('userEmail').textContent = payload.email;
+        }
+      }
+    } catch (e) {
+      // If can't parse token, just show generic message
+    }
+  }
+
+  function logout() {
+    if (confirm('Are you sure you want to logout?')) {
+      localStorage.removeItem('cw_auth_token');
+      window.location.href = '/prompt-engineering-guide/';
+    }
+  }
+</script>
+
+<div class="container">
+    <div class="header">
+        <h2>🐋 The Prompt Perfector</h2>
+        <p>Build powerful, structured prompts using the CRISP Framework</p>
+        <div class="mode-toggle">
+            <button class="mode-btn active" onclick="switchMode('simple')">Simple Mode</button>
+            <button class="mode-btn" onclick="switchMode('advanced')">Advanced Mode</button>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="info-banner" id="modeBanner">
+            <strong>Simple Mode:</strong> Quick prompt building for everyday tasks
+        </div>
+
+        <!-- Simple Mode Fields -->
+        <div id="simpleMode">
+            <div class="form-group">
+                <label for="role">1. Who should the AI act as?</label>
+                <input type="text" id="role" placeholder="e.g., an experienced underwriter, a data analyst, a professional communicator..." oninput="generatePrompt()">
+                <div class="hint">Describe the role or expertise you need (e.g., "a senior trucking underwriter with 10 years experience")</div>
+            </div>
+
+            <div class="form-group">
+                <label for="task">2. What do you need help with?</label>
+                <input type="text" id="task" placeholder="e.g., analyze risk factors, draft an email, summarize loss trends..." oninput="handleTaskInput()">
+                <div class="hint">Be specific about what you want done</div>
+
+                <!-- Smart Suggestions Box -->
+                <div id="suggestions" class="suggestions-box" style="display: none;">
+                    <div class="suggestions-header">💡 Suggested prompts based on your task:</div>
+                    <div id="suggestionsList"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="format">3. How do you want the output?</label>
+                <select id="format" onchange="generatePrompt()">
+                    <option value="a prioritized list with brief explanations">Prioritized List with Explanations</option>
+                    <option value="bullet points">Bullet Points</option>
+                    <option value="a professional email draft">Professional Email Draft</option>
+                    <option value="a step-by-step action plan">Step-by-Step Action Plan</option>
+                    <option value="a comparison table">Comparison Table</option>
+                    <option value="a detailed summary">Detailed Summary</option>
+                    <option value="a short 3-5 sentence summary">Short Summary (3-5 sentences)</option>
+                    <option value="a detailed summary with key findings">Summary with Key Findings</option>
+                    <option value="bullet points highlighting critical insights">Bullet Points with Insights</option>
+                    <option value="a concise, professional email under 200 words">Concise Email (Under 200 words)</option>
+                    <option value="a friendly yet professional message">Friendly Professional Message</option>
+                    <option value="bullet points of key takeaways">Key Takeaways</option>
+                    <option value="a detailed summary with actionable insights">Summary with Actionable Insights</option>
+                    <option value="a prioritized list with risk ratings">Prioritized List with Risk Ratings</option>
+                    <option value="a step-by-step analysis with recommendations">Analysis with Recommendations</option>
+                    <option value="bullet points with explanations">Bullet Points with Explanations</option>
+                    <option value="a side-by-side comparison with pros and cons">Side-by-Side Comparison</option>
+                    <option value="a detailed comparison with recommendations">Comparison with Recommendations</option>
+                    <option value="a prioritized list with timelines">Prioritized List with Timelines</option>
+                    <option value="a detailed implementation guide">Implementation Guide</option>
+                    <option value="a detailed summary with key metrics">Summary with Key Metrics</option>
+                    <option value="bullet points with trend analysis">Bullet Points with Trend Analysis</option>
+                    <option value="a comprehensive report with visualizations">Comprehensive Report</option>
+                </select>
+                <div class="hint">Select the format that best fits your use case (or let suggestions guide you)</div>
+            </div>
+        </div>
+
+        <!-- Advanced Mode Fields (CRISP Framework) -->
+        <div id="advancedMode" style="display: none;">
+            <div class="form-group">
+                <label for="context"><span class="crisp-label">C</span>Context - What's the background?</label>
+                <textarea id="context" placeholder="Example: I'm reviewing a commercial trucking submission for a 25-unit fleet operating in the Southeast..." oninput="generatePrompt()"></textarea>
+                <div class="hint">Provide background information to help the AI understand the situation</div>
+            </div>
+
+            <div class="form-group">
+                <label for="roleAdv"><span class="crisp-label">R</span>Role - Who should the AI be?</label>
+                <input type="text" id="roleAdv" placeholder="Example: Act as a senior commercial auto underwriter with 15 years of experience..." oninput="generatePrompt()">
+                <div class="hint">Define the expertise and perspective the AI should take</div>
+            </div>
+
+            <div class="form-group">
+                <label for="instruction"><span class="crisp-label">I</span>Instruction - What specific task?</label>
+                <input type="text" id="instruction" placeholder="Example: Identify key risk factors and questions I should ask..." oninput="generatePrompt()">
+                <div class="hint">Use action verbs: Analyze, Compare, Summarize, List, Explain, Create</div>
+            </div>
+
+            <div class="form-group">
+                <label for="specifics"><span class="crisp-label">S</span>Specifics - Details, data, constraints</label>
+                <textarea id="specifics" placeholder="Example: Focus on driver experience, radius of operation, cargo types. Limit to top 5 items..." oninput="generatePrompt()"></textarea>
+                <div class="hint">Include relevant details, requirements, and constraints</div>
+            </div>
+
+            <div class="form-group">
+                <label for="preferences"><span class="crisp-label">P</span>Preferences - Output format, tone, length</label>
+                <input type="text" id="preferences" placeholder="Example: Present as bulleted list, professional tone, 300-400 words..." oninput="generatePrompt()">
+                <div class="hint">Specify how you want the answer structured and styled</div>
+            </div>
+        </div>
+
+        <!-- Reality Filter Toggle -->
+        <div class="toggle-group">
+            <label class="toggle-switch">
+                <input type="checkbox" id="realityFilter" onchange="generatePrompt()">
+                <span class="slider"></span>
+            </label>
+            <span class="toggle-label">
+                <strong>Add Reality Filter</strong> - For critical decisions, adds confidence scoring and verification labels
+            </span>
+        </div>
+
+        <!-- Generated Prompt Output -->
+        <div class="result-box">
+            <span class="result-label">Your Optimized Prompt:</span>
+            <div class="result-text" id="finalPrompt">Fill out the form above to generate your prompt...</div>
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="copyToClipboard()">📋 Copy to Clipboard</button>
+                <button class="btn btn-secondary" onclick="resetForm()">🔄 Reset</button>
+            </div>
+        </div>
+
+        <!-- Example Prompts -->
+        <div class="example-prompts">
+            <h4>📚 Quick Start Examples (Click to Load)</h4>
+            <button class="example-btn" onclick="loadExample('submission')">Analyze a new trucking submission</button>
+            <button class="example-btn" onclick="loadExample('loss')">Review loss run patterns</button>
+            <button class="example-btn" onclick="loadExample('email')">Draft a broker communication</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast">✓ Copied to clipboard!</div>
+
+<script>
+    let currentMode = 'simple';
+
+    function switchMode(mode) {
+        currentMode = mode;
+        const simpleMode = document.getElementById('simpleMode');
+        const advancedMode = document.getElementById('advancedMode');
+        const modeBanner = document.getElementById('modeBanner');
+        const buttons = document.querySelectorAll('.mode-btn');
+
+        buttons.forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+
+        if (mode === 'simple') {
+            simpleMode.style.display = 'block';
+            advancedMode.style.display = 'none';
+            modeBanner.innerHTML = '<strong>Simple Mode:</strong> Quick prompt building for everyday tasks';
+        } else {
+            simpleMode.style.display = 'none';
+            advancedMode.style.display = 'block';
+            modeBanner.innerHTML = '<strong>Advanced Mode:</strong> Full CRISP framework for complex tasks';
+        }
+        generatePrompt();
+    }
+
+    // Smart suggestion system
+    const suggestionRules = [
+        {
+            keywords: ['analyze', 'analysis', 'assess', 'evaluate', 'review', 'examine'],
+            suggestions: [
+                { role: 'a senior risk analyst', format: 'a prioritized list with brief explanations' },
+                { role: 'an experienced data analyst', format: 'a detailed summary with key findings' },
+                { role: 'a strategic business analyst', format: 'bullet points highlighting critical insights' }
+            ]
+        },
+        {
+            keywords: ['email', 'write', 'draft', 'compose', 'message', 'communicate'],
+            suggestions: [
+                { role: 'a professional business communicator', format: 'a professional email draft' },
+                { role: 'a skilled insurance communicator', format: 'a concise, professional email under 200 words' },
+                { role: 'a customer service specialist', format: 'a friendly yet professional message' }
+            ]
+        },
+        {
+            keywords: ['summarize', 'summary', 'recap', 'overview', 'key points'],
+            suggestions: [
+                { role: 'an executive briefing specialist', format: 'a short 3-5 sentence summary' },
+                { role: 'a professional analyst', format: 'bullet points of key takeaways' },
+                { role: 'a strategic consultant', format: 'a detailed summary with actionable insights' }
+            ]
+        },
+        {
+            keywords: ['risk', 'underwrite', 'underwriting', 'coverage', 'policy', 'claim'],
+            suggestions: [
+                { role: 'an experienced insurance underwriter', format: 'a prioritized list with risk ratings' },
+                { role: 'a senior claims specialist', format: 'a step-by-step analysis with recommendations' },
+                { role: 'a coverage specialist', format: 'bullet points with explanations' }
+            ]
+        },
+        {
+            keywords: ['compare', 'comparison', 'versus', 'vs', 'difference', 'contrast'],
+            suggestions: [
+                { role: 'a comparative analyst', format: 'a comparison table' },
+                { role: 'a strategic advisor', format: 'a side-by-side comparison with pros and cons' },
+                { role: 'a decision analyst', format: 'a detailed comparison with recommendations' }
+            ]
+        },
+        {
+            keywords: ['plan', 'strategy', 'steps', 'process', 'how to', 'guide'],
+            suggestions: [
+                { role: 'a project planning specialist', format: 'a step-by-step action plan' },
+                { role: 'a strategic consultant', format: 'a prioritized list with timelines' },
+                { role: 'a process improvement expert', format: 'a detailed implementation guide' }
+            ]
+        },
+        {
+            keywords: ['data', 'report', 'metrics', 'statistics', 'numbers', 'trends'],
+            suggestions: [
+                { role: 'a senior data analyst', format: 'a detailed summary with key metrics' },
+                { role: 'a business intelligence specialist', format: 'bullet points with trend analysis' },
+                { role: 'a statistical analyst', format: 'a comprehensive report with visualizations' }
+            ]
+        }
+    ];
+
+    function handleTaskInput() {
+        const task = document.getElementById('task').value.trim().toLowerCase();
+        const suggestionsBox = document.getElementById('suggestions');
+        const suggestionsList = document.getElementById('suggestionsList');
+
+        // Clear previous suggestions
+        suggestionsList.innerHTML = '';
+
+        if (task.length > 3) {
+            // Find matching suggestion rules
+            let matchedSuggestions = [];
+
+            for (const rule of suggestionRules) {
+                for (const keyword of rule.keywords) {
+                    if (task.includes(keyword)) {
+                        matchedSuggestions = rule.suggestions;
+                        break;
+                    }
+                }
+                if (matchedSuggestions.length > 0) break;
+            }
+
+            // If we found suggestions, display them
+            if (matchedSuggestions.length > 0) {
+                matchedSuggestions.forEach((suggestion, index) => {
+                    const suggestionBtn = document.createElement('button');
+                    suggestionBtn.className = 'suggestion-item';
+                    suggestionBtn.textContent = `Act as ${suggestion.role} → Output as ${suggestion.format}`;
+                    suggestionBtn.onclick = () => applySuggestion(suggestion);
+                    suggestionsList.appendChild(suggestionBtn);
+                });
+                suggestionsBox.style.display = 'block';
+            } else {
+                suggestionsBox.style.display = 'none';
+            }
+        } else {
+            suggestionsBox.style.display = 'none';
+        }
+
+        generatePrompt();
+    }
+
+    function applySuggestion(suggestion) {
+        document.getElementById('role').value = suggestion.role;
+        document.getElementById('format').value = suggestion.format;
+        generatePrompt();
+
+        // Show a toast notification
+        showToast('✓ Suggestion applied!');
+    }
+
+    function generatePrompt() {
+        const realityFilterEnabled = document.getElementById('realityFilter').checked;
+        let prompt = '';
+
+        if (currentMode === 'simple') {
+            const role = document.getElementById('role').value.trim() || "[specify your role]";
+            const task = document.getElementById('task').value.trim() || "[describe your task here]";
+            const format = document.getElementById('format').value;
+
+            prompt = `Act as ${role}.
+
+TASK: ${task}
+
+FORMAT: Provide the output as ${format}. Keep the response clear, accurate, and ready to use.`;
+
+        } else {
+            const context = document.getElementById('context').value.trim();
+            const roleAdv = document.getElementById('roleAdv').value.trim();
+            const instruction = document.getElementById('instruction').value.trim();
+            const specifics = document.getElementById('specifics').value.trim();
+            const preferences = document.getElementById('preferences').value.trim();
+
+            const parts = [];
+            if (context) parts.push(`CONTEXT: ${context}`);
+            if (roleAdv) parts.push(`ROLE: ${roleAdv}`);
+            if (instruction) parts.push(`TASK: ${instruction}`);
+            if (specifics) parts.push(`SPECIFICS: ${specifics}`);
+            if (preferences) parts.push(`FORMAT: ${preferences}`);
+
+            prompt = parts.length > 0 ? parts.join('\n\n') : 'Fill out the CRISP framework fields above...';
+        }
+
+        // Add Reality Filter if enabled
+        if (realityFilterEnabled && prompt !== 'Fill out the CRISP framework fields above...' && prompt.indexOf('[describe your task here]') === -1) {
+            prompt = `REALITY FILTER DIRECTIVE:
+• Output your confidence score (0.0-1.0) on every response
+• If confidence is below 0.85, explain what information would increase it
+• Label unverified content: [Inference] [Speculation] [Unverified] [Pattern-Based]
+• Never present generated, inferred, or speculated content as fact
+• If uncertain, say "I cannot verify this" rather than guessing
+• Ask for clarification if information is missing
+
+---
+
+${prompt}`;
+        }
+
+        document.getElementById('finalPrompt').textContent = prompt;
+    }
+
+    function copyToClipboard() {
+        const text = document.getElementById('finalPrompt').textContent;
+
+        if (text === 'Fill out the form above to generate your prompt...' || text === 'Fill out the CRISP framework fields above...') {
+            showToast('⚠️ Please fill out the form first!', '#C4874D');
+            return;
+        }
+
+        // Create temporary element to copy from
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+
+        try {
+            document.execCommand('copy');
+            showToast('✓ Copied to clipboard!');
+        } catch (err) {
+            showToast('❌ Copy failed. Please select and copy manually.', '#A85858');
+        }
+
+        document.body.removeChild(textarea);
+    }
+
+    function showToast(message, color = '#5A8C6B') {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.style.background = color;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2500);
+    }
+
+    function resetForm() {
+        if (currentMode === 'simple') {
+            document.getElementById('role').value = '';
+            document.getElementById('task').value = '';
+            document.getElementById('format').selectedIndex = 0;
+            document.getElementById('suggestions').style.display = 'none';
+        } else {
+            document.getElementById('context').value = '';
+            document.getElementById('roleAdv').value = '';
+            document.getElementById('instruction').value = '';
+            document.getElementById('specifics').value = '';
+            document.getElementById('preferences').value = '';
+        }
+        document.getElementById('realityFilter').checked = false;
+        generatePrompt();
+    }
+
+    function loadExample(type) {
+        switchMode('advanced');
+
+        // Reset all fields first
+        document.getElementById('context').value = '';
+        document.getElementById('roleAdv').value = '';
+        document.getElementById('instruction').value = '';
+        document.getElementById('specifics').value = '';
+        document.getElementById('preferences').value = '';
+        document.getElementById('realityFilter').checked = false;
+
+        if (type === 'submission') {
+            document.getElementById('context').value = "I'm reviewing a new business submission for a commercial trucking insurance account.";
+            document.getElementById('roleAdv').value = "Act as an experienced trucking underwriter with 15 years in commercial auto.";
+            document.getElementById('instruction').value = "Identify the key risk factors I should investigate further before quoting this account.";
+            document.getElementById('specifics').value = "Fleet size: 18 power units, Operation: Regional LTL 400-mile radius, Years in business: 5, Commodities: General freight and some refrigerated, Loss history: 3 claims in 36 months including 1 large cargo claim";
+            document.getElementById('preferences').value = "Provide a prioritized list of 5-7 items with brief explanations. Use bullet points.";
+        } else if (type === 'loss') {
+            document.getElementById('context').value = "I have loss run data for a trucking account seeking renewal.";
+            document.getElementById('roleAdv').value = "Act as a senior underwriter focused on risk improvement.";
+            document.getElementById('instruction').value = "Analyze these claim patterns and identify trends.";
+            document.getElementById('specifics').value = "Claims: 2 backing accidents in parking lots (minor), 1 rear-end collision on highway (moderate BI), 1 cargo shortage claim, 1 weather-related accident";
+            document.getElementById('preferences').value = "Answer these questions: What patterns exist? What driver training might help? What safety program questions should I ask? Any renewal red flags?";
+        } else if (type === 'email') {
+            document.getElementById('context').value = "I need to request additional information from a broker before providing a quote.";
+            document.getElementById('roleAdv').value = "Act as a professional underwriter communicator.";
+            document.getElementById('instruction').value = "Draft an email to a broker explaining that we need additional information.";
+            document.getElementById('specifics').value = "Needed items: Updated driver list with MVRs, Current vehicle schedule, Explanation of large cargo claim from last year, Safety program documentation";
+            document.getElementById('preferences').value = "Keep under 200 words. Professional but helpful tone. Include reasonable deadline.";
+        }
+
+        generatePrompt();
+
+        // Scroll to form
+        document.querySelector('.content').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Initialize on load
+    generatePrompt();
+</script>
+
+</body>
+</html>
