@@ -18,19 +18,46 @@
         (function() {
             'use strict';
             const AUTH_API_URL = 'https://coverwhale-auth.vercel.app';
+            const SESSION_KEY = 'cw_auth_verified';
+            const REDIRECT_KEY = 'cw_auth_redirect_check';
 
-            // If in iframe, allow immediately (normal authenticated flow)
-            if (window.self !== window.top) {
+            // Prevent infinite redirect loops
+            const redirectCount = parseInt(sessionStorage.getItem(REDIRECT_KEY) || '0');
+            if (redirectCount > 2) {
+                // Too many redirects - show error
+                console.error('Too many authentication redirects');
+                sessionStorage.removeItem(REDIRECT_KEY);
                 document.documentElement.classList.add('auth-passed');
+                document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:system-ui;"><div style="text-align:center;max-width:500px;padding:40px;"><h1 style="color:#A85858;">Authentication Error</h1><p>Too many authentication redirects. Please clear your browser cache and try again, or contact support.</p><a href="/prompt-engineering-guide/" style="display:inline-block;margin-top:20px;padding:12px 24px;background:#6B4E8C;color:white;text-decoration:none;border-radius:8px;">Return to Login</a></div></div>';
                 return;
             }
 
-            // Direct access - check token synchronously
+            // If in iframe, verify parent authentication
+            if (window.self !== window.top) {
+                const token = localStorage.getItem('cw_auth_token');
+                if (token && sessionStorage.getItem(SESSION_KEY) === 'true') {
+                    // Already verified in this session
+                    document.documentElement.classList.add('auth-passed');
+                    return;
+                }
+                // In iframe but not verified - redirect parent
+                window.top.location.href = '/prompt-engineering-guide/';
+                return;
+            }
+
+            // Direct access - check token
             const token = localStorage.getItem('cw_auth_token');
 
             if (!token) {
-                // No token - redirect immediately (page stays hidden)
+                // No token - redirect to login
+                sessionStorage.setItem(REDIRECT_KEY, String(redirectCount + 1));
                 window.location.replace('/prompt-engineering-guide/');
+                return;
+            }
+
+            // Check if already verified in this session
+            if (sessionStorage.getItem(SESSION_KEY) === 'true') {
+                document.documentElement.classList.add('auth-passed');
                 return;
             }
 
@@ -38,21 +65,36 @@
             (async function() {
                 try {
                     const response = await fetch(`${AUTH_API_URL}/api/verify`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
+                        headers: { 'Authorization': `Bearer ${token}` },
+                        cache: 'no-cache'
                     });
-                    const data = await response.json();
 
-                    if (data.valid) {
-                        // Token valid - show page
-                        document.documentElement.classList.add('auth-passed');
-                    } else {
-                        // Token invalid - clear and redirect
-                        localStorage.removeItem('cw_auth_token');
-                        window.location.replace('/prompt-engineering-guide/');
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.valid) {
+                            // Token valid - mark as verified and show page
+                            sessionStorage.setItem(SESSION_KEY, 'true');
+                            sessionStorage.removeItem(REDIRECT_KEY);
+                            document.documentElement.classList.add('auth-passed');
+                            return;
+                        }
                     }
+
+                    // Token invalid - clear and redirect
+                    localStorage.removeItem('cw_auth_token');
+                    sessionStorage.removeItem(SESSION_KEY);
+                    sessionStorage.setItem(REDIRECT_KEY, String(redirectCount + 1));
+                    window.location.replace('/prompt-engineering-guide/');
+
                 } catch (error) {
                     console.error('Auth verification failed:', error);
-                    window.location.replace('/prompt-engineering-guide/');
+                    // On network error, try to show page if token exists
+                    // User may be offline or auth service may be down
+                    if (token) {
+                        document.documentElement.classList.add('auth-passed');
+                    } else {
+                        window.location.replace('/prompt-engineering-guide/');
+                    }
                 }
             })();
         })();
