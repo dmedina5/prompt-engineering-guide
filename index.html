@@ -183,7 +183,7 @@
 
     <!-- Content Frame (hidden until authenticated) -->
     <div id="contentFrame" class="content-container">
-        <iframe id="guideFrame" src="guide.html" title="Master Prompt Engineering Guide"></iframe>
+        <iframe id="guideFrame" title="Master Prompt Engineering Guide"></iframe>
     </div>
 
     <script>
@@ -319,6 +319,11 @@
         }
 
         function showContent() {
+            // Load iframe content only after authentication succeeds
+            const iframe = document.getElementById('guideFrame');
+            if (!iframe.src) {
+                iframe.src = 'guide.html';
+            }
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('contentFrame').classList.add('visible');
         }
