@@ -635,7 +635,7 @@
 
             <div class="form-group">
                 <label for="roleAdv"><span class="crisp-label">R</span>Role - Who should the AI be?</label>
-                <input type="text" id="roleAdv" placeholder="Example: Act as a senior commercial auto underwriter with 15 years of experience..." oninput="generatePrompt()">
+                <input type="text" id="roleAdv" placeholder="Usually leave blank - the facts imply the role. Use for a deliberate shift: 'read this the way the broker will'" oninput="generatePrompt()">
                 <div class="hint">Define the expertise and perspective the AI should take</div>
             </div>
 
@@ -665,7 +665,7 @@
                 <span class="slider"></span>
             </label>
             <span class="toggle-label">
-                <strong>Add Reality Filter</strong> - For critical decisions, adds confidence scoring and verification labels
+                <strong>Add Reality Filter</strong> - For anything that gets quoted, priced, or acted on. Makes the AI mark what it sourced, what it inferred, and what it doesn't know
             </span>
         </div>
 
@@ -832,15 +832,14 @@
         let prompt = '';
 
         if (currentMode === 'simple') {
-            const role = document.getElementById('role').value.trim() || "[specify your role]";
+            const role = document.getElementById('role').value.trim();
             const task = document.getElementById('task').value.trim() || "[describe your task here]";
             const format = document.getElementById('format').value;
 
-            prompt = `Act as ${role}.
+            const roleLine = (role && role !== "[specify your role]") ? `Act as ${role}.\n\n` : '';
+            prompt = `${roleLine}TASK: ${task}
 
-TASK: ${task}
-
-FORMAT: Provide the output as ${format}. Keep the response clear, accurate, and ready to use.`;
+FORMAT: Give it to me as ${format}. Lead with what matters most, and flag anything you're inferring rather than reading from what I gave you.`;
 
         } else {
             const context = document.getElementById('context').value.trim();
@@ -861,13 +860,12 @@ FORMAT: Provide the output as ${format}. Keep the response clear, accurate, and 
 
         // Add Reality Filter if enabled
         if (realityFilterEnabled && prompt !== 'Fill out the CRISP framework fields above...' && prompt.indexOf('[describe your task here]') === -1) {
-            prompt = `REALITY FILTER DIRECTIVE:
-• Output your confidence score (0.0-1.0) on every response
-• If confidence is below 0.85, explain what information would increase it
-• Label unverified content: [Inference] [Speculation] [Unverified] [Pattern-Based]
-• Never present generated, inferred, or speculated content as fact
-• If uncertain, say "I cannot verify this" rather than guessing
-• Ask for clarification if information is missing
+            prompt = `REALITY FILTER
+Mark each claim [Sourced] (say where), [Inference] (say what from), or
+[Unverified] (say what would settle it). Never invent a number, date,
+name, or citation. Write probabilistic things probabilistically. Look
+things up before saying you can't verify them. Disclose as you write -
+don't re-audit finished work.
 
 ---
 
@@ -943,19 +941,19 @@ ${prompt}`;
 
         if (type === 'submission') {
             document.getElementById('context').value = "I'm reviewing a new business submission for a commercial trucking insurance account.";
-            document.getElementById('roleAdv').value = "Act as an experienced trucking underwriter with 15 years in commercial auto.";
+            document.getElementById('roleAdv').value = "";
             document.getElementById('instruction').value = "Identify the key risk factors I should investigate further before quoting this account.";
             document.getElementById('specifics').value = "Fleet size: 18 power units, Operation: Regional LTL 400-mile radius, Years in business: 5, Commodities: General freight and some refrigerated, Loss history: 3 claims in 36 months including 1 large cargo claim";
             document.getElementById('preferences').value = "Provide a prioritized list of 5-7 items with brief explanations. Use bullet points.";
         } else if (type === 'loss') {
             document.getElementById('context').value = "I have loss run data for a trucking account seeking renewal.";
-            document.getElementById('roleAdv').value = "Act as a senior underwriter focused on risk improvement.";
+            document.getElementById('roleAdv').value = "";
             document.getElementById('instruction').value = "Analyze these claim patterns and identify trends.";
             document.getElementById('specifics').value = "Claims: 2 backing accidents in parking lots (minor), 1 rear-end collision on highway (moderate BI), 1 cargo shortage claim, 1 weather-related accident";
             document.getElementById('preferences').value = "Answer these questions: What patterns exist? What driver training might help? What safety program questions should I ask? Any renewal red flags?";
         } else if (type === 'email') {
             document.getElementById('context').value = "I need to request additional information from a broker before providing a quote.";
-            document.getElementById('roleAdv').value = "Act as a professional underwriter communicator.";
+            document.getElementById('roleAdv').value = "";
             document.getElementById('instruction').value = "Draft an email to a broker explaining that we need additional information.";
             document.getElementById('specifics').value = "Needed items: Updated driver list with MVRs, Current vehicle schedule, Explanation of large cargo claim from last year, Safety program documentation";
             document.getElementById('preferences').value = "Keep under 200 words. Professional but helpful tone. Include reasonable deadline.";

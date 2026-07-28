@@ -444,6 +444,19 @@
   <p>Getting the Most from AI Tools While Protecting Sensitive Information</p>
 </header>
 
+<!-- Points at the maintained guide. This page is the earlier one; the two share
+     CRISP and Reality Filter content and have drifted apart before. -->
+<div style="background: #FFF8E8; border: 1px solid #E8D4A0; border-left: 4px solid #D9A441; padding: 16px 20px; border-radius: 12px; margin-bottom: 20px;">
+  <p style="margin: 0 0 6px; font-weight: 600;">📘 There is a newer guide</p>
+  <p style="margin: 0; font-size: 0.95rem; line-height: 1.6;">
+    The <a href="https://dmedina5.github.io/CW-AI-Learning-Guide/" style="color: var(--cw-purple); font-weight: 600;">CW AI Learning Guide</a>
+    supersedes this page and is the one being maintained &mdash; it covers context engineering,
+    agentic AI, Cowork, and the CW-specific use cases. This page is kept for the links already
+    shared around, and its CRISP and Reality Filter content is kept in step with the new guide.
+    If the two ever disagree, the new guide is right.
+  </p>
+</div>
+
 <!-- Prompt Builder Link -->
 <div style="background: linear-gradient(135deg, var(--cw-purple-dark), var(--cw-purple)); padding: 16px; border-radius: 12px; margin-bottom: 20px; text-align: center; box-shadow: 0 4px 12px rgba(107, 78, 140, 0.2);">
   <p style="color: white; margin-bottom: 12px; font-size: 1rem; font-weight: 500;">✨ Ready to build your perfect prompt?</p>
@@ -707,45 +720,52 @@ Now categorize: "Intermodal container transport, port operations"</pre>
     <p>The Reality Filter is a <strong>custom system prompt</strong> you can use to make AI responses more reliable, honest, and transparent. It forces the AI to:</p>
     <div class="grid-2" style="margin-top: 16px;">
       <div class="tip-card" style="background: #E8F4F8;">
-        <h4>📊 Score Confidence</h4>
-        <p>Output confidence levels on every response so you know how reliable the information is</p>
+        <h4>📊 Separate What's Known</h4>
+        <p>Sourced, inferred, or unknown - marked as it goes, not buried in a caveat at the end</p>
       </div>
       <div class="tip-card" style="background: #E8F4F8;">
-        <h4>🏷️ Label Uncertainty</h4>
-        <p>Clearly mark any inferences, speculation, or unverified claims</p>
+        <h4>🏷️ Say What Would Settle It</h4>
+        <p>Not just "I'm unsure" but the specific document or number that would close the gap</p>
       </div>
       <div class="tip-card" style="background: #E8F4F8;">
-        <h4>🚫 Prevent Hallucination</h4>
-        <p>Stop the AI from presenting generated content as verified fact</p>
+        <h4>🚫 No Invented Specifics</h4>
+        <p>Never a number, date, name, or citation that isn't actually in front of it</p>
       </div>
       <div class="tip-card" style="background: #E8F4F8;">
-        <h4>🔮 Forward-Thinking</h4>
-        <p>Get pros/cons analysis and suggestions for improving low-confidence outputs</p>
+        <h4>🔎 Check First, Disclaim Second</h4>
+        <p>With search available, looking it up beats declining to answer</p>
       </div>
     </div>
   </div>
 
   <div class="card" style="border-left-color: #4A90A4;">
-    <h3 style="color: #4A90A4;">📋 The Confidence Score System</h3>
-    <p>When using the Reality Filter, the AI will output a confidence score (0.0 - 1.0) with every response:</p>
-    
-    <div class="formula-box" style="background: #E8F4F8;">
-      <strong>Confidence Thresholds:</strong><br><br>
-      <span style="color: #2E7D32;">● 0.85 - 1.0</span> → High confidence, proceed with response<br>
-      <span style="color: #F57C00;">● 0.60 - 0.84</span> → Medium confidence, explanation provided for improvement<br>
-      <span style="color: #C62828;">● Below 0.60</span> → Low confidence, significant gaps identified
-    </div>
-    
-    <div class="example-box">
-      <div class="example-label">✅ Example Response with Confidence Score</div>
-      <strong>Confidence: 0.78</strong><br><br>
-      [Response content here]<br><br>
-      <strong>To increase confidence, I would need:</strong>
-      <ul style="margin: 8px 0 0 20px;">
-        <li>Specific state where the operation is domiciled</li>
-        <li>Exact commodity types being hauled</li>
-        <li>Confirmation of whether they have any owner-operators</li>
-      </ul>
+    <h3 style="color: #4A90A4;">📋 What Changed in v2</h3>
+    <p>The original was written for models that would confidently invent things and rarely
+    volunteer doubt. Newer models are better calibrated on their own, so the filter can do
+    less - and several of its mechanics were working against it:</p>
+
+    <ul style="margin: 12px 0 0 20px; line-height: 1.7;">
+      <li><strong>The 0.0-1.0 confidence score is gone.</strong> A self-reported "0.72" is a
+      generated number, not a measurement - false precision from a directive built to stop
+      false precision. Replaced with what actually helps: what would raise it.</li>
+      <li><strong>Four labels became three, and one marks the good.</strong> [Inference] and
+      [Pattern-Based] described the same act, and labelling only the doubtful parts left you
+      unable to tell verified from merely unlabelled. [Sourced] fixes that.</li>
+      <li><strong>The flagged-word list became a standard.</strong> Six banned words miss every
+      overclaim phrased differently and trip on the legitimate uses.</li>
+      <li><strong>Check before you disclaim.</strong> "I cannot verify this" was right when
+      models had no tools. These can look things up.</li>
+      <li><strong>Added a guard against over-verification.</strong> Newer models already
+      re-check their work; a standing instruction that reads as "verify yourself" makes them
+      do it twice and pad the answer. The filter now says it wants disclosure, not a second
+      pass. The old self-correction clause was dropped for the same reason.</li>
+    </ul>
+
+    <div class="example-box" style="margin-top: 16px;">
+      <div class="example-label">⚠️ If you already run v1</div>
+      The labels changed. [Pattern-Based] folds into [Inference], [Speculation] is covered by
+      [Inference] with its "say what from" showing the weak grounding, and [Sourced] is new.
+      Update any saved Projects or custom instructions so your team reads one vocabulary.
     </div>
   </div>
 
@@ -755,33 +775,31 @@ Now categorize: "Intermodal container transport, port operations"</pre>
     
     <div class="grid-2">
       <div class="tip-card">
-        <h4>[Inference]</h4>
-        <p>Conclusions drawn from available data but not explicitly stated</p>
+        <h4>[Sourced]</h4>
+        <p>It's in the material in front of it - with a pointer to where</p>
       </div>
       <div class="tip-card">
-        <h4>[Speculation]</h4>
-        <p>Possibilities or predictions without supporting evidence</p>
+        <h4>[Inference]</h4>
+        <p>Concluded or projected - with what it was concluded from</p>
       </div>
       <div class="tip-card">
         <h4>[Unverified]</h4>
-        <p>Claims that cannot be confirmed from the AI's knowledge base</p>
-      </div>
-      <div class="tip-card">
-        <h4>[Pattern-Based]</h4>
-        <p>Observations based on common patterns, not verified facts</p>
+        <p>Not known - with what would actually settle it</p>
       </div>
     </div>
-    
+
     <div class="example-box">
       <div class="example-label">✅ Properly Labeled Response</div>
-      "Based on the fleet size and operation type, the minimum liability requirement is $750,000. <strong>[Inference]</strong> Given the refrigerated cargo, they likely haul produce or pharmaceuticals. <strong>[Speculation]</strong> If they operate in California, additional MCS-90 endorsement requirements may apply—<strong>[Unverified]</strong> I cannot confirm current CA-specific regulations without access to current DOT filings."
+      "<strong>[Sourced]</strong> Your submission lists 35 power units running refrigerated freight. <strong>[Inference]</strong> Reefer work at that size usually means produce or pharma - I'm reading that off the equipment and radius, not off a commodity list you've given me. <strong>[Unverified]</strong> Whether California adds endorsement requirements here I'd need to check against current DOT filings; tell me if they run CA and I'll look."
     </div>
   </div>
 
   <div class="card" style="border-left-color: #C62828;">
-    <h3 style="color: #C62828;">⚠️ Flagged Words Requiring Verification</h3>
-    <p>These absolute/guarantee words must be labeled unless backed by a verified source:</p>
-    
+    <h3 style="color: #C62828;">⚠️ Write Probabilistic Things Probabilistically</h3>
+    <p>v1 carried a blocklist of six words. A blocklist misses every overclaim phrased
+    differently and trips on the legitimate uses, so v2 states the standard instead - though
+    these are still the words that most often signal the problem:</p>
+
     <div class="pii-list" style="margin-top: 12px;">
       <div class="pii-item" style="background: #FFEBEE; color: #C62828;">Prevent</div>
       <div class="pii-item" style="background: #FFEBEE; color: #C62828;">Guarantee</div>
@@ -789,17 +807,15 @@ Now categorize: "Intermodal container transport, port operations"</pre>
       <div class="pii-item" style="background: #FFEBEE; color: #C62828;">Fixes</div>
       <div class="pii-item" style="background: #FFEBEE; color: #C62828;">Eliminates</div>
       <div class="pii-item" style="background: #FFEBEE; color: #C62828;">Ensures that</div>
-      <div class="pii-item" style="background: #FFEBEE; color: #C62828;">Always</div>
-      <div class="pii-item" style="background: #FFEBEE; color: #C62828;">Never fails</div>
     </div>
-    
+
     <div class="example-box bad" style="margin-top: 16px;">
       <div class="example-label">❌ Unacceptable</div>
       "Adding dash cams <strong>will prevent</strong> fraudulent claims and <strong>guarantees</strong> lower premiums."
     </div>
     <div class="example-box">
       <div class="example-label">✅ Properly Qualified</div>
-      "Adding dash cams <strong>[Inference]</strong> may help reduce fraudulent claims based on industry patterns, and <strong>[Speculation]</strong> could potentially contribute to lower premiums depending on carrier guidelines."
+      "<strong>[Inference]</strong> Fleets that add cameras generally see fewer disputed liability claims - the pattern is well established, but I'm applying it to your fleet, not measuring it. <strong>[Unverified]</strong> The premium impact turns on the carrier's telematics credit, which isn't in anything you've sent me. Nothing here supports <em>guarantees</em>: the direction is likely, the size isn't knowable from this."
     </div>
   </div>
 
@@ -810,23 +826,22 @@ Now categorize: "Intermodal container transport, port operations"</pre>
     <div class="example-box">
       <div class="example-label">✅ Brainstorming Output Format</div>
       <strong>Question:</strong> Should we expand into hazmat trucking coverage?<br><br>
-      <strong>Confidence: 0.72</strong> (market-specific data would improve this)<br><br>
       <strong>PROS:</strong>
       <ul style="margin: 4px 0 8px 20px;">
-        <li>Higher premium per unit [Verified - industry standard]</li>
-        <li>Less competition in specialty markets [Inference]</li>
-        <li>Diversification of book [Verified]</li>
+        <li>[Sourced] Higher premium per unit - industry standard, widely published</li>
+        <li>[Inference] Less competition in specialty markets, reading off the barrier to entry</li>
+        <li>[Sourced] Diversification of the book</li>
       </ul>
       <strong>CONS:</strong>
       <ul style="margin: 4px 0 8px 20px;">
-        <li>Higher severity potential [Verified]</li>
-        <li>Specialized underwriting expertise required [Verified]</li>
-        <li>Regulatory complexity varies by state [Unverified - needs research]</li>
+        <li>[Sourced] Higher severity potential</li>
+        <li>[Sourced] Specialized underwriting expertise required</li>
+        <li>[Unverified] Regulatory complexity varies by state - I'd need the target states to say how much</li>
       </ul>
-      <strong>Forward-Looking Considerations:</strong>
+      <strong>Forward-Looking:</strong>
       <ul style="margin: 4px 0 0 20px;">
-        <li>[Speculation] EV adoption may change hazmat transport dynamics in 5-10 years</li>
-        <li>[Inference] Training investment would be needed based on current team expertise</li>
+        <li>[Inference] EV adoption may change hazmat transport dynamics over 5-10 years - projecting from current fleet-electrification trends, not from anything specific to hazmat</li>
+        <li>[Inference] Training investment would be needed, based on the team's current expertise</li>
       </ul>
     </div>
   </div>
@@ -837,46 +852,29 @@ Now categorize: "Intermodal container transport, port operations"</pre>
   </div>
   
   <div class="card">
-    <pre style="font-size: 0.8rem; line-height: 1.6;">REALITY FILTER DIRECTIVE
+    <pre style="font-size: 0.8rem; line-height: 1.6;">REALITY FILTER
 
-CONFIDENCE SCORING:
-• Output your confidence score (0.0-1.0) on every response
-• If confidence is below 0.85, explain what information would 
-  increase it
-• For brainstorming prompts, list pros/cons with verification 
-  labels
-• Take a forward-thinking view and flag speculation clearly
+Ground every claim in what I've given you or what you can actually
+check. Keep three states visibly separate as you go:
 
-VERIFICATION REQUIREMENTS:
-• Never present generated, inferred, speculated, or deduced 
-  content as fact
-• If you cannot verify something directly, say:
-  - "I cannot verify this."
-  - "I do not have access to that information."
-  - "My knowledge base does not contain that."
+[Sourced]      It's in the material in front of you - say where.
+[Inference]    You concluded or projected it - say what from.
+[Unverified]   You don't know - say so, and what would settle it.
 
-LABELING REQUIREMENTS:
-• Label unverified content at the START of the sentence:
-  [Inference] [Speculation] [Unverified] [Pattern-Based]
-• If ANY part of a response is unverified, label it clearly
-• Do not paraphrase or reinterpret my input unless I request it
+Never produce a number, date, name, quote, or citation that isn't in
+front of you. A plausible-looking figure is worse than "I don't have
+that" - I can act on the second one.
 
-FLAGGED WORDS - Label these claims unless directly sourced:
-Prevent, Guarantee, Will never, Fixes, Eliminates, Ensures that
+Write probabilistic things probabilistically. Words like guarantees,
+eliminates, will prevent, or ensures need a source that actually says
+so. Otherwise tell me what's likely, and how strongly.
 
-LLM BEHAVIOR CLAIMS:
-• For claims about AI/LLM behavior (including yourself), include:
-  [Inference] or [Unverified] with a note that it's based on 
-  observed patterns, not verified documentation
+If you can look something up, do that before telling me you can't
+verify it. If you still can't, say which it is: you didn't check, or
+you checked and it isn't there.
 
-CLARIFICATION:
-• Ask for clarification if information is missing
-• Do not guess or fill gaps with assumptions
-
-SELF-CORRECTION:
-• If you break this directive, immediately say:
-  "Correction: I previously made an unverified claim. That was 
-  incorrect and should have been labeled."</pre>
+This is a disclosure instruction, not a verification one - mark what
+you know as you write. Don't re-audit finished work to satisfy it.</pre>
     <button onclick="navigator.clipboard.writeText(this.previousElementSibling.textContent);this.textContent='✓ Copied!';setTimeout(()=>this.textContent='📋 Copy Reality Filter',2000)" style="margin-top: 12px; padding: 10px 20px; background: var(--cw-purple); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">📋 Copy Reality Filter</button>
   </div>
 
@@ -885,11 +883,15 @@ SELF-CORRECTION:
     <div class="grid-2">
       <div class="tip-card" style="background: #E8F8E8;">
         <h4>✅ Great For</h4>
-        <p>Regulatory questions, coverage interpretations, risk analysis, underwriting decisions, anything where accuracy is critical</p>
+        <p>Anything that gets quoted, priced, filed, or acted on - regulatory questions, coverage interpretations, risk analysis, underwriting decisions</p>
       </div>
       <div class="tip-card" style="background: #FFF8E8;">
-        <h4>⚡ Optional For</h4>
-        <p>Creative brainstorming, draft emails, general explanations, training content where you'll verify independently</p>
+        <h4>⚡ Skip For</h4>
+        <p>Drafting an email, tidying notes, general explanations - the labels are just noise there, and it isn't free</p>
+      </div>
+      <div class="tip-card" style="background: #E8F4F8;">
+        <h4>📌 Where to Put It</h4>
+        <p>A Claude <strong>Project's custom instructions</strong> or a Cowork workspace, so every conversation inherits it - not retyped at the top of each chat</p>
       </div>
     </div>
   </div>
