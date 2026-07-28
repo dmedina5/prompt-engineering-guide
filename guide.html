@@ -465,7 +465,7 @@
 
 <nav class="nav-tabs">
   <button class="nav-tab active" data-section="basics">🎯 The Basics</button>
-  <button class="nav-tab" data-section="framework">📋 CRISP Framework</button>
+  <button class="nav-tab" data-section="framework">📋 GRIP Framework</button>
   <button class="nav-tab" data-section="techniques">⚡ Techniques</button>
   <button class="nav-tab" data-section="reality">🔍 Reality Filter</button>
   <button class="nav-tab" data-section="underwriting">🚚 UW Examples</button>
@@ -494,15 +494,23 @@
   </div>
   
   <div class="card">
-    <h3><span class="num">2</span> Define the Role</h3>
-    <p>Tell the AI who it should act as—this shapes tone, expertise, and perspective.</p>
-    <div class="formula-box">
-      "Act as a [ROLE] with expertise in [DOMAIN]..."
+        <h3><span class="num">2</span> Let the Facts Set the Role</h3>
+    <p>Role-play preambles existed to pull the right expertise out of weaker models. State a real
+    situation in real terms and the newest models already know what hat to wear.</p>
+    <div class="example-box bad">
+      <div class="example-label">&#10060; Then</div>
+      "Act as a senior commercial auto underwriter with 15 years of experience in trucking risks."
     </div>
     <div class="example-box">
-      <div class="example-label">✅ Example</div>
-      "Act as an experienced commercial auto insurance underwriter. Help me understand what red flags to look for when reviewing a new trucking account application."
+      <div class="example-label">&#9989; Now</div>
+      "I'm underwriting a 35-unit refrigerated fleet and need to decide whether to pursue it." &mdash; the domain, the seniority, and the task are all implied by the facts.
     </div>
+    <p style="font-size:0.9rem; margin-top:12px;"><strong>Two places a role still earns its keep.</strong>
+    When you want a genuinely different lens than the situation implies &mdash; "review this as the
+    broker would," "argue the plaintiff's side." And as <em>standing</em> context: Anthropic still
+    recommends setting a role in a system prompt, which for you means a Project's custom
+    instructions, written once rather than retyped per message. What's dead weight is the
+    per-message preamble that restates what your facts already say.</p>
   </div>
   
   <div class="card">
@@ -517,61 +525,79 @@
   </div>
   
   <div class="card">
-    <h3><span class="num">4</span> State Your Desired Output Format</h3>
-    <p>Tell the AI exactly how you want the answer—bullets, tables, paragraphs, or structured sections.</p>
-    <div class="grid-2">
+        <h3><span class="num">4</span> Name the Deliverable, Not the Template</h3>
+    <p>Format steering still works &mdash; it's <em>dictated structure</em> that costs you. A
+    numbered output template caps the answer at the shape you already imagined; describing the job
+    lets the model pick a better one.</p>
+    <div class="example-box bad">
+      <div class="example-label">&#10060; Then</div>
+      "Provide: 1. Top 5 risk factors 2. Red flags 3. Information gaps 4. Appetite assessment. Use bullet points. Keep under 400 words."
+    </div>
+    <div class="example-box">
+      <div class="example-label">&#9989; Now</div>
+      "Give me your read &mdash; pursue, decline, or conditional &mdash; and what would change your answer. Lead with the call, then the reasoning. Keep it tight."
+    </div>
+    <div class="grid-2" style="margin-top:12px;">
       <div class="tip-card">
-        <h4>Format Options</h4>
-        <p>Bullet points, numbered lists, tables, step-by-step, summary + details, pros/cons</p>
+        <h4>Still worth asking for</h4>
+        <p>A real container: an email, a table, a one-pager, a letter. These are genuine constraints, not decoration.</p>
       </div>
       <div class="tip-card">
-        <h4>Length Controls</h4>
-        <p>"Keep it under 200 words" or "Provide a comprehensive analysis"</p>
+        <h4>Length controls</h4>
+        <p>Keep these &mdash; the newest models write longer by default, so "keep it tight" or a word cap earns its place.</p>
       </div>
     </div>
   </div>
   
   <div class="card">
-    <h3><span class="num">5</span> Set Boundaries & Constraints</h3>
-    <p>Tell the AI what to avoid—this keeps responses focused and prevents unwanted content.</p>
-    <div class="formula-box">
-      "Do NOT include [X]. Avoid [Y]. Focus only on [Z]."
+        <h3><span class="num">5</span> Describe the Standard, Not the Prohibitions</h3>
+    <p>A stack of "do NOT" rules only fences off the bad without ever describing the good &mdash;
+    and on newer models those rules actively compete with the judgment you're trying to use. One
+    sentence about what good looks like does more work.</p>
+    <div class="example-box bad">
+      <div class="example-label">&#10060; Then</div>
+      "Do NOT include specific financial details. Avoid technical jargon. Do not be pushy. Keep it under 200 words."
     </div>
+    <div class="example-box">
+      <div class="example-label">&#9989; Now</div>
+      "Keep the reasoning at the level of the pattern rather than specific figures. Write it the way an underwriter writes to a broker they want to keep &mdash; firm, respectful, brief."
+    </div>
+    <p style="font-size:0.9rem; margin-top:12px;">Hard rules still belong in a prompt when they're
+    genuinely hard &mdash; a compliance line you cannot cross, a figure that must not leave the
+    building. Say those once, plainly. The problem is the pile, not the principle.</p>
   </div>
 </section>
 
-<!-- CRISP FRAMEWORK SECTION -->
+<!-- GRIP FRAMEWORK SECTION -->
 <section id="framework" class="section">
   <div class="card">
-    <h3>The CRISP Framework for Effective Prompts</h3>
-    <p>Use this simple framework to structure any prompt for maximum effectiveness:</p>
-    
+    <h3>The GRIP Framework for Effective Prompts</h3>
+    <p>GRIP replaces CRISP. Every slot is <strong>information you supply</strong> rather than
+    behavior you dictate &mdash; which is the whole difference between a prompt that helps the
+    newest models and one that fights them. Four elements instead of five, on purpose: the shape
+    of a framework should match its own advice.</p>
+
     <div class="formula-box" style="font-size: 1.1rem; text-align: center;">
-      <strong>C</strong>ontext → <strong>R</strong>ole → <strong>I</strong>nstruction → <strong>S</strong>pecifics → <strong>P</strong>references
+      <strong>G</strong>round &rarr; <strong>R</strong>equest &rarr; <strong>I</strong>ntent &rarr; <strong>P</strong>roof
     </div>
+    <p style="text-align:center; font-size:0.9rem; margin-top:8px;">Get a grip on the real material first. Everything else is downstream of that.</p>
   </div>
-  
+
   <div class="card">
-    <h3><span class="num">C</span> Context</h3>
-    <p>Background information that helps the AI understand the situation.</p>
+    <h3><span class="num">G</span> Ground</h3>
+    <p>The real material. Attach the loss run, the ACORD, the report; paste the actual numbers.
+    This is the highest-value part of any prompt and the one people skip.</p>
     <div class="example-box">
-      <div class="example-label">✅ Example</div>
-      "We're a trucking insurance MGA that specializes in long-haul operations. Our target market is fleets with 5-50 power units operating primarily in the continental US."
+      <div class="example-label">&#9989; Example</div>
+      "Three years of loss runs attached. 50-unit long-haul dry van fleet, 30+ states, mix of owner-operators and company drivers."
     </div>
   </div>
-  
+
   <div class="card">
-    <h3><span class="num">R</span> Role</h3>
-    <p>Who should the AI be? This shapes expertise and tone.</p>
-    <div class="example-box">
-      <div class="example-label">✅ Example</div>
-      "Act as a senior commercial auto underwriter with 15 years of experience in trucking risks."
-    </div>
-  </div>
-  
-  <div class="card">
-    <h3><span class="num">I</span> Instruction</h3>
-    <p>The specific task you want completed. Use action verbs.</p>
+    <h3><span class="num">R</span> Request</h3>
+    <p>The decision you need made &mdash; and the container you need it in, if it matters. An
+    email, a table, a one-pager. Not a numbered output template, which caps the answer at the
+    shape you already imagined.</p>
     <div class="grid-2">
       <div class="tip-card">
         <h4>Strong Action Verbs</h4>
@@ -582,44 +608,102 @@
         <p>Help with, Tell me about, Do something with, Look at</p>
       </div>
     </div>
-  </div>
-  
-  <div class="card">
-    <h3><span class="num">S</span> Specifics</h3>
-    <p>Details, data, constraints, and requirements.</p>
     <div class="example-box">
-      <div class="example-label">✅ Example</div>
-      "Focus on these factors: driver experience levels, radius of operation, cargo types, and safety technology adoption. Limit analysis to the top 5 most impactful items."
+      <div class="example-label">&#9989; Example</div>
+      "Tell me whether this risk is improving or deteriorating, and what loss pick you'd support at renewal."
     </div>
   </div>
-  
+
   <div class="card">
-    <h3><span class="num">P</span> Preferences</h3>
-    <p>Output format, tone, length, and style preferences.</p>
+    <h3><span class="num">I</span> Intent</h3>
+    <p>Why you need it, who it's for, what happens next. Anthropic's own guidance is that
+    explaining the motivation measurably improves the answer &mdash; this is the most underused
+    letter, and the one CRISP never had.</p>
     <div class="example-box">
-      <div class="example-label">✅ Example</div>
-      "Present your findings in a bulleted list with brief explanations. Keep the tone professional but accessible. Aim for 300-400 words total."
+      <div class="example-label">&#9989; Example</div>
+      "This is going to the carrier on Thursday, so I need to defend the number rather than just state it."
     </div>
   </div>
-  
+
   <div class="card">
-    <h3>Complete CRISP Example</h3>
-    <pre>CONTEXT: I'm an underwriter reviewing a new business submission 
-for a 25-truck fleet that operates refrigerated goods across 
+    <h3><span class="num">P</span> Proof</h3>
+    <p>What you need marked: sourced, inferred, or unknown. The Reality Filter is this letter
+    written out in full &mdash; for routine work, one sentence does it.</p>
+    <div class="example-box">
+      <div class="example-label">&#9989; Example</div>
+      "Flag anything you're inferring rather than reading off the file, and tell me what would settle the open questions."
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Coming from CRISP</h3>
+    <p>Nothing you learned is wasted &mdash; three of CRISP's five letters survive under new
+    names, one gets promoted, and one goes away.</p>
+    <div class="grid-2">
+      <div class="tip-card">
+        <h4>Context &rarr; Ground + Intent</h4>
+        <p>Split. The facts go in Ground; the why-and-who-for becomes its own letter, because it was the part everyone dropped.</p>
+      </div>
+      <div class="tip-card">
+        <h4>Role &rarr; removed</h4>
+        <p>A role that restates what your facts already say is dead weight. Still worth setting in a Project's standing instructions, or when you want a lens the situation doesn't imply.</p>
+      </div>
+      <div class="tip-card">
+        <h4>Instruction &rarr; Request</h4>
+        <p>Same job, sharper name: the decision you need made, not the artifact you want back.</p>
+      </div>
+      <div class="tip-card">
+        <h4>Specifics &rarr; Ground</h4>
+        <p>Promoted to first position, and the advice changed &mdash; attach the file rather than retyping a summary of it.</p>
+      </div>
+      <div class="tip-card">
+        <h4>Preferences &rarr; Request + Proof</h4>
+        <p>Split. The container (email, table) rides with the Request; the standard becomes Proof. The output template is gone.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>The same prompt, before and after</h3>
+    <p><strong>In CRISP:</strong></p>
+    <pre>CONTEXT: I'm an underwriter reviewing a new business submission
+for a 25-truck fleet that operates refrigerated goods across
 the Southeast region.
 
-ROLE: Act as a senior trucking insurance underwriter.
-
-INSTRUCTION: Identify the key risk factors I should investigate 
+INSTRUCTION: Identify the key risk factors I should investigate
 further before quoting this account.
 
-SPECIFICS: The fleet has been in operation for 3 years, has a 
-mix of owner-operators and company drivers, and reported 
-4 claims in the past 24 months (2 cargo, 1 physical damage, 
+SPECIFICS: The fleet has been in operation for 3 years, has a
+mix of owner-operators and company drivers, and reported
+4 claims in the past 24 months (2 cargo, 1 physical damage,
 1 auto liability).
 
-PREFERENCES: Provide a prioritized list of 5-7 items with 
+PREFERENCES: Provide a prioritized list of 5-7 items with
 a brief explanation of why each matters. Use bullet points.</pre>
+
+    <p style="margin-top:16px;"><strong>In GRIP:</strong></p>
+    <pre>New business submission, 25-truck refrigerated fleet running
+the Southeast. Submission and loss runs attached &mdash; 3 years in
+operation, mix of owner-operators and company drivers, 4 claims
+in the past 24 months (2 cargo, 1 PD, 1 AL).          [GROUND]
+
+What should I be digging into before I quote this? Rank by what
+would actually change the price, not by category.     [REQUEST]
+
+I'm deciding whether to spend the week on it, so I care about
+what would kill the deal more than what's merely
+interesting.                                           [INTENT]
+
+Flag anything you're inferring rather than reading off
+the file.                                               [PROOF]</pre>
+
+    <div class="example-box" style="margin-top:16px;">
+      <div class="example-label">&#128161; The labels are for learning, not for typing</div>
+      Don't put [GROUND] in your actual prompt &mdash; they're annotations to show you the four
+      moves. A real GRIP prompt is just four short paragraphs of plain English. Note what got
+      <em>longer</em> versus the CRISP version: the facts, and the reason. What got shorter: the
+      instructions about format.
+    </div>
   </div>
 </section>
 
@@ -897,8 +981,8 @@ you know as you write. Don't re-audit finished work to satisfy it.</pre>
   </div>
 
   <div class="warning-box">
-    <h4>💡 Pro Tip: Combine with CRISP Framework</h4>
-    <p>For maximum effectiveness, use the Reality Filter alongside the CRISP framework. Start with the Reality Filter directive, then structure your actual question using Context → Role → Instruction → Specifics → Preferences.</p>
+    <h4>💡 Pro Tip: Combine with the GRIP Framework</h4>
+    <p>For maximum effectiveness, pair the Reality Filter with GRIP — in fact Proof, GRIP's fourth letter, is the Reality Filter in one sentence. Put the filter in your Project's standing instructions, then structure each question as Ground → Request → Intent → Proof.</p>
   </div>
 </section>
 
@@ -913,8 +997,6 @@ you know as you write. Don't re-audit finished work to satisfy it.</pre>
     <h3>Submission Analysis</h3>
     <pre>CONTEXT: I'm reviewing a new business submission for 
 commercial trucking insurance.
-
-ROLE: Act as an experienced trucking underwriter.
 
 TASK: Based on the following account characteristics, 
 identify key risk factors and questions I should ask:
@@ -932,9 +1014,7 @@ and 3-4 specific questions for the broker.</pre>
   
   <div class="card">
     <h3>Coverage Comparison</h3>
-    <pre>ROLE: Act as a commercial insurance coverage specialist.
-
-TASK: Create a comparison of Motor Truck Cargo coverage 
+    <pre>TASK: Create a comparison of Motor Truck Cargo coverage 
 versus Truckers General Liability for a client who is 
 confused about the difference.
 
@@ -972,9 +1052,7 @@ Questions to answer:
   
   <div class="card">
     <h3>Broker Communication</h3>
-    <pre>ROLE: Act as a professional underwriter communicator.
-
-TASK: Draft an email to a broker explaining that we 
+    <pre>TASK: Draft an email to a broker explaining that we 
 need additional information before we can quote 
 their submission.
 
@@ -992,9 +1070,7 @@ what we need and why. Include a reasonable deadline.</pre>
   
   <div class="card">
     <h3>Regulatory Quick Reference</h3>
-    <pre>ROLE: Act as a trucking insurance regulatory specialist.
-
-TASK: Summarize the key insurance requirements for 
+    <pre>TASK: Summarize the key insurance requirements for 
 commercial trucking operations, including:
 
 1. Federal minimum liability limits by operation type
@@ -1011,9 +1087,7 @@ details separately.</pre>
   
   <div class="card">
     <h3>Training / Knowledge Building</h3>
-    <pre>ROLE: Act as a trucking insurance instructor.
-
-TASK: Explain the concept of "radius of operation" 
+    <pre>TASK: Explain the concept of "radius of operation" 
 and why it matters for underwriting trucking risks.
 
 INCLUDE:
@@ -1117,40 +1191,52 @@ FORMAT: Conversational explanation with practical examples</pre>
 <section id="quickref" class="section">
   <div class="card">
     <h3>📌 Prompt Starter Templates</h3>
-    <p>Copy and customize these templates for common tasks:</p>
+    <p>Copy and customize these for common tasks. They're written the GRIP way &mdash; plain
+    paragraphs, no ALL-CAPS section labels. The bracketed notes tell you what belongs where;
+    delete them as you fill each one in.</p>
   </div>
   
   <div class="card">
     <h3>General Analysis</h3>
-    <pre>ROLE: Act as [specific role].
-CONTEXT: [Background information]
-TASK: [Specific action verb + what you need]
-SPECIFICS: [Details, constraints, data]
-FORMAT: [How you want the output]
-NOTE: Do not fabricate information—flag uncertainties.</pre>
+    <pre>[The situation, plus the real material — attach the file
+where you have one, and paste the actual numbers.]
+
+[The decision you need made, and the container you need it
+in if it matters: an email, a table, a one-pager.]
+
+[Why you need it, who it's for, what happens next.]
+
+Flag anything you're inferring rather than reading off what
+I gave you, and say what would settle the open questions.</pre>
   </div>
   
   <div class="card">
     <h3>Document Drafting</h3>
-    <pre>ROLE: Act as a professional insurance communicator.
-TASK: Draft a [type of document] for [audience].
-PURPOSE: [What this document should accomplish]
-TONE: [Professional/friendly/formal/etc.]
-INCLUDE: [Key points that must be covered]
-LENGTH: [Word count or format guidance]
-AVOID: [What not to include]</pre>
+    <pre>[The situation, and the facts the document has to carry.]
+
+Draft a [type of document] for [audience].
+
+[Why it's going out and what it needs to achieve — this is
+what lets the model judge tone better than you can specify
+it.]
+
+[What good looks like, in one sentence: "the way an
+underwriter writes to a broker they want to keep — firm,
+respectful, brief."]</pre>
   </div>
   
   <div class="card">
     <h3>Learning / Explanation</h3>
-    <pre>ROLE: Act as an experienced [domain] instructor.
-TASK: Explain [concept] to someone who [experience level].
-INCLUDE: 
-- Definition and key components
-- Why it matters in practice
-- Common misconceptions
-- Real-world examples
-FORMAT: Conversational, with practical examples</pre>
+    <pre>[What you already know about the topic, and where you got
+stuck — the gap is the most useful thing you can give.]
+
+Explain [concept] to me.
+
+I need it because [what you're about to do with it], and I'm
+coming at it as someone who [experience level].
+
+Where the answer depends on something you can't see from
+here, say so rather than picking a case.</pre>
   </div>
   
   <div class="card">

@@ -562,7 +562,7 @@
 <div class="container">
     <div class="header">
         <h2>🐋 The Prompt Perfector</h2>
-        <p>Build powerful, structured prompts using the CRISP Framework</p>
+        <p>Build powerful, structured prompts using the GRIP Framework</p>
         <div class="mode-toggle">
             <button class="mode-btn active" onclick="switchMode('simple')">Simple Mode</button>
             <button class="mode-btn" onclick="switchMode('advanced')">Advanced Mode</button>
@@ -625,36 +625,30 @@
             </div>
         </div>
 
-        <!-- Advanced Mode Fields (CRISP Framework) -->
+        <!-- Advanced Mode Fields (GRIP Framework) -->
         <div id="advancedMode" style="display: none;">
             <div class="form-group">
-                <label for="context"><span class="crisp-label">C</span>Context - What's the background?</label>
-                <textarea id="context" placeholder="Example: I'm reviewing a commercial trucking submission for a 25-unit fleet operating in the Southeast..." oninput="generatePrompt()"></textarea>
-                <div class="hint">Provide background information to help the AI understand the situation</div>
+                <label for="ground"><span class="crisp-label">G</span>Ground - the real material</label>
+                <textarea id="ground" placeholder="Attach the file in your chat, then note what it is - e.g. Loss runs attached. 18 power units, 5 years in business, 3 claims in 36 months including 1 large cargo claim." oninput="generatePrompt()"></textarea>
+                <div class="hint">The highest-value field. Attach the real document rather than retyping a summary of it.</div>
             </div>
 
             <div class="form-group">
-                <label for="roleAdv"><span class="crisp-label">R</span>Role - Who should the AI be?</label>
-                <input type="text" id="roleAdv" placeholder="Usually leave blank - the facts imply the role. Use for a deliberate shift: 'read this the way the broker will'" oninput="generatePrompt()">
-                <div class="hint">Define the expertise and perspective the AI should take</div>
+                <label for="request"><span class="crisp-label">R</span>Request - what decision do you need made?</label>
+                <input type="text" id="request" placeholder="Example: Tell me whether to pursue this account, and what would change your answer..." oninput="generatePrompt()">
+                <div class="hint">The decision you owe someone, plus the container if it matters: an email, a table, a one-pager.</div>
             </div>
 
             <div class="form-group">
-                <label for="instruction"><span class="crisp-label">I</span>Instruction - What specific task?</label>
-                <input type="text" id="instruction" placeholder="Example: Identify key risk factors and questions I should ask..." oninput="generatePrompt()">
-                <div class="hint">Use action verbs: Analyze, Compare, Summarize, List, Explain, Create</div>
+                <label for="intent"><span class="crisp-label">I</span>Intent - why you need it, who it is for</label>
+                <input type="text" id="intent" placeholder="Example: This goes to the carrier Thursday, so I need to defend the number, not just state it..." oninput="generatePrompt()">
+                <div class="hint">The most underused field - explaining the motivation measurably improves the answer.</div>
             </div>
 
             <div class="form-group">
-                <label for="specifics"><span class="crisp-label">S</span>Specifics - Details, data, constraints</label>
-                <textarea id="specifics" placeholder="Example: Focus on driver experience, radius of operation, cargo types. Limit to top 5 items..." oninput="generatePrompt()"></textarea>
-                <div class="hint">Include relevant details, requirements, and constraints</div>
-            </div>
-
-            <div class="form-group">
-                <label for="preferences"><span class="crisp-label">P</span>Preferences - Output format, tone, length</label>
-                <input type="text" id="preferences" placeholder="Example: Present as bulleted list, professional tone, 300-400 words..." oninput="generatePrompt()">
-                <div class="hint">Specify how you want the answer structured and styled</div>
+                <label for="proof"><span class="crisp-label">P</span>Proof - what to mark as sourced vs inferred</label>
+                <input type="text" id="proof" placeholder="Example: Flag anything you are inferring rather than reading off the file..." oninput="generatePrompt()">
+                <div class="hint">The Reality Filter in one sentence. Toggle the full version on below for high-stakes work.</div>
             </div>
         </div>
 
@@ -711,7 +705,7 @@
         } else {
             simpleMode.style.display = 'none';
             advancedMode.style.display = 'block';
-            modeBanner.innerHTML = '<strong>Advanced Mode:</strong> Full CRISP framework for complex tasks';
+            modeBanner.innerHTML = '<strong>Advanced Mode:</strong> Full GRIP framework - four plain paragraphs, no section labels needed';
         }
         generatePrompt();
     }
@@ -842,24 +836,20 @@
 FORMAT: Give it to me as ${format}. Lead with what matters most, and flag anything you're inferring rather than reading from what I gave you.`;
 
         } else {
-            const context = document.getElementById('context').value.trim();
-            const roleAdv = document.getElementById('roleAdv').value.trim();
-            const instruction = document.getElementById('instruction').value.trim();
-            const specifics = document.getElementById('specifics').value.trim();
-            const preferences = document.getElementById('preferences').value.trim();
+            // GRIP emits plain paragraphs. The ALL-CAPS section labels the old
+            // CRISP builder produced were scaffolding the model does not need -
+            // and reading them back taught the wrong habit.
+            const parts = ['ground','request','intent','proof']
+                .map(id => document.getElementById(id).value.trim())
+                .filter(Boolean);
 
-            const parts = [];
-            if (context) parts.push(`CONTEXT: ${context}`);
-            if (roleAdv) parts.push(`ROLE: ${roleAdv}`);
-            if (instruction) parts.push(`TASK: ${instruction}`);
-            if (specifics) parts.push(`SPECIFICS: ${specifics}`);
-            if (preferences) parts.push(`FORMAT: ${preferences}`);
+            prompt = parts.length > 0 ? parts.join('
 
-            prompt = parts.length > 0 ? parts.join('\n\n') : 'Fill out the CRISP framework fields above...';
+') : 'Fill out the GRIP fields above...';
         }
 
         // Add Reality Filter if enabled
-        if (realityFilterEnabled && prompt !== 'Fill out the CRISP framework fields above...' && prompt.indexOf('[describe your task here]') === -1) {
+        if (realityFilterEnabled && prompt !== 'Fill out the GRIP fields above...' && prompt.indexOf('[describe your task here]') === -1) {
             prompt = `REALITY FILTER
 Mark each claim [Sourced] (say where), [Inference] (say what from), or
 [Unverified] (say what would settle it). Never invent a number, date,
@@ -878,7 +868,7 @@ ${prompt}`;
     function copyToClipboard() {
         const text = document.getElementById('finalPrompt').textContent;
 
-        if (text === 'Fill out the form above to generate your prompt...' || text === 'Fill out the CRISP framework fields above...') {
+        if (text === 'Fill out the form above to generate your prompt...' || text === 'Fill out the GRIP fields above...') {
             showToast('⚠️ Please fill out the form first!', '#C4874D');
             return;
         }
@@ -918,11 +908,10 @@ ${prompt}`;
             document.getElementById('format').selectedIndex = 0;
             document.getElementById('suggestions').style.display = 'none';
         } else {
-            document.getElementById('context').value = '';
-            document.getElementById('roleAdv').value = '';
-            document.getElementById('instruction').value = '';
-            document.getElementById('specifics').value = '';
-            document.getElementById('preferences').value = '';
+            document.getElementById('ground').value = '';
+            document.getElementById('request').value = '';
+            document.getElementById('intent').value = '';
+            document.getElementById('proof').value = '';
         }
         document.getElementById('realityFilter').checked = false;
         generatePrompt();
@@ -931,32 +920,25 @@ ${prompt}`;
     function loadExample(type) {
         switchMode('advanced');
 
-        // Reset all fields first
-        document.getElementById('context').value = '';
-        document.getElementById('roleAdv').value = '';
-        document.getElementById('instruction').value = '';
-        document.getElementById('specifics').value = '';
-        document.getElementById('preferences').value = '';
+        const set = (id, v) => { document.getElementById(id).value = v; };
+        ['ground','request','intent','proof'].forEach(id => set(id, ''));
         document.getElementById('realityFilter').checked = false;
 
         if (type === 'submission') {
-            document.getElementById('context').value = "I'm reviewing a new business submission for a commercial trucking insurance account.";
-            document.getElementById('roleAdv').value = "";
-            document.getElementById('instruction').value = "Identify the key risk factors I should investigate further before quoting this account.";
-            document.getElementById('specifics').value = "Fleet size: 18 power units, Operation: Regional LTL 400-mile radius, Years in business: 5, Commodities: General freight and some refrigerated, Loss history: 3 claims in 36 months including 1 large cargo claim";
-            document.getElementById('preferences').value = "Provide a prioritized list of 5-7 items with brief explanations. Use bullet points.";
+            set('ground', "New business submission on a commercial trucking account. 18 power units, regional LTL on a 400-mile radius, 5 years in business, general freight plus some refrigerated. 3 claims in 36 months, including 1 large cargo claim. (Attach the submission itself if you have it.)");
+            set('request', "Tell me what I should dig into before quoting this, and whether it looks worth pursuing. Rank by what would actually change the price, not by category.");
+            set('intent', "I am deciding whether to spend real time on it this week, so I care about what would kill the deal more than what is merely interesting.");
+            set('proof', "Flag anything you are inferring rather than reading off the data.");
         } else if (type === 'loss') {
-            document.getElementById('context').value = "I have loss run data for a trucking account seeking renewal.";
-            document.getElementById('roleAdv').value = "";
-            document.getElementById('instruction').value = "Analyze these claim patterns and identify trends.";
-            document.getElementById('specifics').value = "Claims: 2 backing accidents in parking lots (minor), 1 rear-end collision on highway (moderate BI), 1 cargo shortage claim, 1 weather-related accident";
-            document.getElementById('preferences').value = "Answer these questions: What patterns exist? What driver training might help? What safety program questions should I ask? Any renewal red flags?";
+            set('ground', "Loss runs for a trucking account up for renewal: 2 backing accidents in parking lots (minor), 1 rear-end collision on the highway (moderate BI), 1 cargo shortage claim, 1 weather-related accident.");
+            set('request', "Tell me what these claims say about how this fleet is actually run, and whether I should be worried at renewal.");
+            set('intent', "I have to defend the renewal number to the carrier, so I need the story behind the pattern - not a restatement of the claims.");
+            set('proof', "If the mix points at a specific gap - training, supervision, equipment - say so, and be clear about which part is the data talking and which part is you reading into it.");
         } else if (type === 'email') {
-            document.getElementById('context').value = "I need to request additional information from a broker before providing a quote.";
-            document.getElementById('roleAdv').value = "";
-            document.getElementById('instruction').value = "Draft an email to a broker explaining that we need additional information.";
-            document.getElementById('specifics').value = "Needed items: Updated driver list with MVRs, Current vehicle schedule, Explanation of large cargo claim from last year, Safety program documentation";
-            document.getElementById('preferences').value = "Keep under 200 words. Professional but helpful tone. Include reasonable deadline.";
+            set('ground', "Incomplete submission on a fleet account. Still missing: updated driver list with MVRs, current vehicle schedule, an explanation of the large cargo claim from last year, and safety program documentation.");
+            set('request', "Draft the email asking the broker for what is missing.");
+            set('intent', "This broker sends us good business and I do not want it to read as bureaucratic - I need the file complete without spending relationship capital.");
+            set('proof', "Make it easy to action: the broker should be able to work straight down it and tick items off. Give them a reasonable deadline, and keep it short.");
         }
 
         generatePrompt();
